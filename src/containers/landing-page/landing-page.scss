@@ -1,0 +1,10 @@
+@import 'media-queries';
+@import 'fonts';
+@import 'colors';
+@import 'easings';
+.home {
+	    display: flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+}
