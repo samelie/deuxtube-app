@@ -1,0 +1,11 @@
+.video-track{
+  position: relative;
+  max-width: 50%;
+  margin:0;
+
+  .playing__wrapper{
+    position: relative;
+    display: flex;
+    width:100%;
+  }
+}

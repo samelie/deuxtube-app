@@ -16,12 +16,18 @@ class ControlsRecord extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      recording:false
+    }
   }
 
   componentDidMount() {
     const socket = Socket.socket
     const { videoId } = this.context;
+  }
+
+  _onRecord(v){
+    Emitter.emit('controls:record:record', v)
   }
 
   _onEnd() {
@@ -33,7 +39,11 @@ class ControlsRecord extends Component {
     const { videoId } = this.context;
     return (
       <div ref="controlsRecord" className="controls-record">
-        <button>RECORD</button>
+        <button  onClick={()=>{
+          let _r = !this.state.recording
+          this.setState({recording:_r})
+          this._onRecord(_r)
+        }}>RECORD</button>
         <button onClick={()=>{
           this._onEnd()
         }}>SAVE</button>

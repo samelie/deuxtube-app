@@ -4,6 +4,8 @@ import { Link } from 'react-router';
 import Q from 'bluebird';
 import _ from 'lodash';
 import { connect } from 'react-redux';
+import { mediaAudioChanged } from '../../actions/app';
+
 
 import raf from 'raf'
 import Workers from '../../utils/workers';
@@ -25,7 +27,7 @@ class AudioTrack extends Component {
 
   constructor(props) {
     super(props)
-    const { onSave } = this.props
+    const { addAudio } = this.props
     this.sliderData = [{
       key: 'seek',
       title: 'Seek',
@@ -65,6 +67,7 @@ class AudioTrack extends Component {
       },
     }]
     this.state = {
+      totalDuration: 0,
       duration: 0,
       seek: {
         paused: false,
@@ -76,15 +79,20 @@ class AudioTrack extends Component {
     }
 
     this._sliceWorker = Workers.create(ARRAY_SLICE)
+
     Emitter.on('controls:record:save', () => {
       //worker
+      /*
+
+      not need :((
+
       this.getSaveBuffer()
         .then(buffer => {
-          onSave(buffer)
+          addAudio(buffer)
         })
         .catch(err => {
           console.error(err.toString());
-        })
+        })*/
     })
   }
 
@@ -109,14 +117,20 @@ class AudioTrack extends Component {
   componentDidMount() {
     const socket = Socket.socket
     const { videoId } = this.context;
+    const { addAudio } = this.props;
     let _self = this
     this.audio = new DeuxTubeAudio(socket)
       //dont use emitter
-    this.audio.audio.on('ON_BUFFER_CHUNK', (chunk) => {}, false)
+    this.audio.audio.on('ON_BUFFER_CHUNK', (chunk) => {
+      addAudio(chunk)
+    }, false)
 
     this.audio.load(videoId, 1)
       .then((sound) => {
-        this.setState({ duration: sound.duration })
+        this.setState({
+          totalDuration: sound.duration,
+          duration: sound.duration
+        })
         this._startUpdate()
       })
 
@@ -139,6 +153,11 @@ class AudioTrack extends Component {
       //_self._effects.changeKey()
     })
 
+  }
+
+  componentWillUpdate(props, state) {
+    const { mediaAudioChanged } = this.props;
+    mediaAudioChanged(state)
   }
 
   _startUpdate() {
@@ -184,10 +203,30 @@ class AudioTrack extends Component {
 
   //**************
   //API
+
+  /*
+  THERE IS NO API :(
+
+  */
   //**************
+
+
+  /*
+  Too bad we cant trim a dash audio with bytes
+  pass start and end instead
+  */
+
+  getRecordStartEndTimes() {
+    let _dur = this.audio.sound.duration
+    let _s = this.state.range.sliderValue[0]
+    let _e = this.state.range.sliderValue[1]
+    let _diff = _e - _s
+    return [_dur * _s, _diff * _dur]
+  }
 
   getSaveBuffer() {
     return new Q((yes, no) => {
+      let _self = this
       let _dur = this.audio.sound.duration
       let sampleRate = this.audio.sound.sourceNode.buffer.sampleRate
       let _s = this.state.range.sliderValue[0]
@@ -201,7 +240,11 @@ class AudioTrack extends Component {
         if (e.data.buffer.byteLength === 0) {
           no(new Error('Too small of range'))
         } else {
-          yes(e.data.buffer)
+          let indexBuffer = _self.audio.audio.indexBuffer
+          let _trimmedBuffer = new Uint8Array(indexBuffer.byteLength + e.data.buffer.byteLength);
+          _trimmedBuffer.set(indexBuffer, 0);
+          _trimmedBuffer.set(new Uint8Array(e.data.buffer), indexBuffer.byteLength);
+          yes(_trimmedBuffer.buffer)
         }
       };
 
@@ -221,4 +264,6 @@ class AudioTrack extends Component {
 
 export default connect(({ browser }) => ({
   browser,
-}), {})(AudioTrack);
+}), {
+  mediaAudioChanged
+})(AudioTrack);

@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 import { createResponsiveStateReducer } from 'redux-responsive';
 
 import resize from './resize';
+import app from './app';
 /*import terms from './terms';
 import ui from './ui';
 import projects from './projects';
@@ -13,6 +14,7 @@ import platform from './platform';*/
 export default combineReducers({
   routing,
   resize,
+  app,
   browser: createResponsiveStateReducer({
     mobile: 360,
     phablet: 540,

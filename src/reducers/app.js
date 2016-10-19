@@ -1,6 +1,5 @@
 import {
-  RESIZE,
-  ORIENTATION_CHANGE,
+  APP_MEDIA_AUDIO,
 } from '../constants/action-types';
 
 import { Record } from 'immutable';
@@ -9,10 +8,20 @@ import { Record } from 'immutable';
  * Record is like a class, but immutable and with default values.
  * https://facebook.github.io/immutable-js/docs/#/Record
  */
+/*const InitialState = Record({
+  media: Record({
+    audio: Record({
+
+    })
+  })
+});*/
+
 const InitialState = Record({
-  width: window.innerWidth,
-  height: window.innerHeight,
-  orientation: window.orientation
+  media: {
+    audio: {
+
+    }
+  }
 });
 
 const initialState = new InitialState;
@@ -23,16 +32,15 @@ const initialState = new InitialState;
  * @param  {function} action [Redux action. Defined in '/actions/terms.js']
  * @return {Record} a new copy of the state you passed into with any changes to it
  */
-export default function resize(state = initialState, action) {
+export default function app(state = initialState, action) {
   switch (action.type) {
-    case RESIZE:
+    case APP_MEDIA_AUDIO:
       {
-        return state.set('width', action.payload.width)
-          .set('height', action.payload.height)
-      }
-    case ORIENTATION_CHANGE:
-      {
-        return state.set('orientation', action.payload)
+        let _media = state.get('media')
+        _media.audio = Object.assign({}, _media.audio, action.payload)
+        let _mergedMedia = Object.assign({}, state.get('media').audio, action.payload)
+        state.set('media', _media)
+        return state
       }
     default:
       {

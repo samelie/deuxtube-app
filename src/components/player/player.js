@@ -69,31 +69,38 @@ class Player extends Component {
         }
       }
     }
+
+    Emitter.on('controls:record:record', (isOn) => {
+      //worker
+      console.log(isOn);
+      this._recording = isOn
+    })
+    Emitter.on('controls:record:save', () => {
+      this._recording = false
+    })
   }
 
   componentDidMount() {
-    const { socket } = this.props;
+    const { socket, addFrame } = this.props;
     const { videoId } = this.context;
     let _self = this
 
-    this._recorder = new DashRecorder(socket)
     this._videos = []
-
-    /*this._rafHandle = raf(tick()=> {
-      if(_self.audio){
-        _self.audio.getAmplitude(onAmp)
-      }
-      //EaseNumbers.update()
+    console.log("init");
+    this._initPlayers()
+    raf.cancel(this._rafHandle)
+    let _rc = 0
+    this._rafHandle = raf(function tick() {
       if (_rc % 2 === 0 && _self._recording) {
-       // _self._recorder.pipeFrame(_self._effects.imageDataArrayBuffer.buffer)
+        addFrame(_self._effects.imageDataArrayBuffer.buffer)
       }
       _rc++
       raf(tick)
-    })*/
+    })
   }
 
   _saveVideo() {
-    this._recorder.pipeSave({ width: 320, height: 240 })
+    //this._recorder.pipeSave({ width: 320, height: 240 })
   }
 
   _initPlayers() {

@@ -1,12 +1,11 @@
 const Workers = (() => {
-  function create(_function) {
+  function create(string) {
     var blob = URL.createObjectURL(
-      new Blob([_function.toString()], {
+      new Blob([string], {
       type: 'application/javascript'
     }));
 
     var worker = new Worker(blob);
-    //URL.revokeObjectURL(blob);
     return worker;
   }
   return {

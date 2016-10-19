@@ -60,7 +60,8 @@ class LandingPage extends Component {
       <h1>MAKE MUSIC VIDEOS</h1>
       <input ref="qInputSearch"></input>
       <button ref="qInputBtn" onClick={()=>{
-        let v = this.refs.qInputSearch.value || "https://www.youtube.com/watch?v=oAWxGe1ks4g"
+        let v = this.refs.qInputSearch.value || "https://www.youtube.com/watch?v=JnCluApO0Kw"
+        //let v = this.refs.qInputSearch.value || "https://www.youtube.com/watch?v=oAWxGe1ks4g"
         this._parseAndNavigate(v)
       }}>GO</button>
       </div>
