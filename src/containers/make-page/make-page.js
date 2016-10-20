@@ -48,13 +48,17 @@ class MakePage extends Component {
 
   componentDidMount() {
     const { browser, app, params } = this.props;
-    this._recorder = new DashRecorder(Socket.socket)
+    //pipe too heavy i think
+    this._recorder = new DashRecorder(Socket.socket, {
+      pipe:false
+    })
 
     Emitter.on('controls:record:save', () => {
       let _dur = app.media.audio.totalDuration
       let _s = app.media.audio.range.sliderValue[0]
       let _e = app.media.audio.range.sliderValue[1]
       let _diff = _e - _s
+      //this._recorder.concatFrames()
       this._recorder.save({
         width: 320,
         height: 240,
@@ -65,13 +69,8 @@ class MakePage extends Component {
           `-t ${_dur * _diff} `
         ]
       })
-      //return [_dur * _s, _diff * _dur]
-      console.log(app.media);
-      console.log(this.refs.audioTrack);
-      console.log(this.refs.audioTrack.state.range);
-      //console.log(this.refs.audioTrack.getSaveBuffer);
-      //let _soundBuffer = this.refs.audioTrack.getSaveBuffer()
-      //console.log(_soundBuffer);
+
+
     })
 
   }
@@ -84,7 +83,6 @@ class MakePage extends Component {
 
   */
   _addAudio(buffer) {
-    console.log(buffer);
     this._recorder.addAudio(buffer)
   }
 

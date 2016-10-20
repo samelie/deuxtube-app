@@ -82,6 +82,14 @@ export default class DeuxEffects {
     console.log(this._uniforms.uKeyVideoIndex );
   }
 
+  pause(){
+    this.videoEffects.pause()
+  }
+
+  resume(){
+    this.videoEffects.resume()
+  }
+
   get imageDataArrayBuffer(){
     return this.videoEffects.imageDataArrayBuffer
   }

@@ -135,6 +135,10 @@ class AudioTrack extends Component {
     this._addKeys()
 
     Emitter.emit(`videotrack:el`, this._player.vjPlayer.mediaSources[0][0].el)
+
+    Emitter.on('controls:record:save', () => {
+      this.controller.pause()
+    })
   }
 
   _addKeys() {

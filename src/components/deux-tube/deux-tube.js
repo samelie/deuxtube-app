@@ -3,8 +3,10 @@ import './deux-tube.scss';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import _ from 'lodash';
+import raf from 'raf';
 import { connect } from 'react-redux';
 
+import Gui from './gui'
 import Effects from './effects';
 import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter'
@@ -12,6 +14,8 @@ import EaseNumbers from '../../utils/easeNumbers'
 
 import VideoTrack from '../video-track/video-track'
 const VERBOSE = false
+
+
 class DeuxTube extends Component {
 
   constructor(props) {
@@ -44,10 +48,7 @@ class DeuxTube extends Component {
         //'PLqi-HJej8buehtiukZnuRoL9yiRJfEBRQ'
       ],
       forcePlaylistUpdate: true
-    }]
-
-    /*
-    , {
+    }, {
       noAutoStart: false,
       videoWidth: 640,
       videoHeight: 460,
@@ -78,17 +79,26 @@ class DeuxTube extends Component {
       ],
       forcePlaylistUpdate: true
 
-    }
-    */
+    }]
+
 
     this.state = {
       ready: false
     }
 
+    this._guiProps = {
+      effects: {
+        callback: (key, val) => {
+          console.log(key, val);
+          this._effects.changedValue(key, val)
+        }
+      }
+    }
   }
 
   componentDidMount() {
-
+    let _self = this
+    let {addFrame} = this.props
     this.setState({ ready: true })
 
     this._effects = new Effects(
@@ -99,49 +109,37 @@ class DeuxTube extends Component {
         fullscreen: false
       })
 
+    //send from the videoTrack, should have passed a prop func
     Emitter.on(`videotrack:el`, (el) => {
       this._effects.addSource(el, _c)
       let _c = (this._effects._sources.length === this._videoData.length)
-      if(_c){
+      if (_c) {
         this._effects.ready()
       }
     })
-  }
 
-  _initPlayers() {
-
-    this._videos.push(this._addVideo(this.refs.player, ))
-    let _b = Behavior.get()
-    _b.videoPlayDuration = 15
-    this._videos[0].vjPlayer.controllers[0].behavior = _b
-
-
-    this._videos.push(this._addVideo(this.refs.player, ))
-
-    this._activeVideoIndex = 0
-
-    Emitter.on(`query:result:clicked`, (videoId) => {
-      let _c = this._videos[this._activeVideoIndex].vjPlayer.controllers[0]
-      _c.unshiftNewVideo(videoId)
+    Emitter.on('controls:record:record', (isOn) => {
+      //worker
+      console.log(isOn);
+      this._recording = isOn
+    })
+    Emitter.on('controls:record:save', () => {
+      this._recording = false
+      this._effects.pause()
     })
 
-    Emitter.on(`query:playlist`, (data) => {
-      let _c = this._videos[this._activeVideoIndex].vjPlayer.controllers[0]
-      _c.addPlaylistItems(data)
-    })
+    raf.cancel(this._rafHandle)
+    let _rc = 0
+    this._rafHandle = raf(function tick() {
+      if (_rc % 2 === 0 && _self._recording) {
 
-    Emitter.on(`controls:video:active`, (index) => {
-      this._activeVideoIndex = index
+        addFrame(_self._effects.imageDataArrayBuffer.buffer)
+      }
+      _rc++
+      raf(tick)
     })
-
   }
 
-  _addVideo(el, options) {
-    let vjPlayer1 = new Video({ el: el, socket: Socket.socket })
-    vjPlayer1.addSource(options)
-    vjPlayer1.start()
-    return vjPlayer1
-  }
 
   render() {
     const { browser } = this.props;
@@ -164,6 +162,7 @@ class DeuxTube extends Component {
         <div className="deux-tube__videos">
           {[..._videos]}
         </div>
+        <Gui effects={this._guiProps.effects}/>
       </div>
     );
   }
