@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { mediaAudioChanged } from '../../actions/app';
 
 
-import raf from 'raf'
+import AF from 'animation-frame'
 import Workers from '../../utils/workers';
 import Emitter from '../../utils/emitter';
 import Socket from '../../utils/socket';
@@ -17,7 +17,7 @@ import MediaControls from '../media-controls/media-controls'
 const VERBOSE = false
 
 const ARRAY_SLICE = 'onmessage=function(e){var data=e.data;var start=data.start;var end=data.end;var f=new Uint8Array(data.b);postMessage(f.slice(start,end))};'
-
+const AUDIO_CHUNKS_TO_LOAD = 2
 
 class AudioTrack extends Component {
 
@@ -78,21 +78,22 @@ class AudioTrack extends Component {
       }
     }
 
-    this._sliceWorker = Workers.create(ARRAY_SLICE)
+    //this._sliceWorker = Workers.create(ARRAY_SLICE)
 
     Emitter.on('controls:record:save', () => {
-      //worker
-      /*
+      this.audio.sound.stop()
+        //worker
+        /*
 
-      not need :((
+        not need :((
 
-      this.getSaveBuffer()
-        .then(buffer => {
-          addAudio(buffer)
-        })
-        .catch(err => {
-          console.error(err.toString());
-        })*/
+        this.getSaveBuffer()
+          .then(buffer => {
+            addAudio(buffer)
+          })
+          .catch(err => {
+            console.error(err.toString());
+          })*/
     })
   }
 
@@ -125,7 +126,7 @@ class AudioTrack extends Component {
       addAudio(chunk)
     }, false)
 
-    this.audio.load(videoId, 1)
+    this.audio.load(videoId, AUDIO_CHUNKS_TO_LOAD)
       .then((sound) => {
         this.setState({
           totalDuration: sound.duration,
@@ -155,6 +156,11 @@ class AudioTrack extends Component {
 
   }
 
+  componentWillUnmount() {
+    this._anim.cancel(this._rafHandle)
+    this.audio.sound.destroy()
+  }
+
   componentWillUpdate(props, state) {
     const { mediaAudioChanged } = this.props;
     mediaAudioChanged(state)
@@ -162,11 +168,15 @@ class AudioTrack extends Component {
 
   _startUpdate() {
     let _self = this
-    raf.cancel(this._rafHandle)
-    this._rafHandle = raf(function tick() {
-      _self.onSoundProgress()
-      raf(tick)
-    })
+    this._anim = new AF();
+    this._update()
+  }
+
+  _update() {
+    this._rafHandle = this._anim.request((t) => {
+      this.onSoundProgress()
+      this._update()
+    });
   }
 
   onSoundProgress() {

@@ -1,5 +1,6 @@
 import {
   APP_MEDIA_AUDIO,
+  APP_EXPORT_URL,
 } from '../constants/action-types';
 
 import { Record } from 'immutable';
@@ -17,6 +18,7 @@ import { Record } from 'immutable';
 });*/
 
 const InitialState = Record({
+  finalUrl:null,
   media: {
     audio: {
 
@@ -41,6 +43,10 @@ export default function app(state = initialState, action) {
         let _mergedMedia = Object.assign({}, state.get('media').audio, action.payload)
         state.set('media', _media)
         return state
+      }
+    case APP_EXPORT_URL:
+      {
+        return state.set('finalUrl', action.payload)
       }
     default:
       {

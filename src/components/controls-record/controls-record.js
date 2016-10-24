@@ -17,7 +17,7 @@ class ControlsRecord extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      recording:false
+      recording: false,
     }
   }
 
@@ -26,7 +26,7 @@ class ControlsRecord extends Component {
     const { videoId } = this.context;
   }
 
-  _onRecord(v){
+  _onRecord(v) {
     Emitter.emit('controls:record:record', v)
   }
 
@@ -34,11 +34,20 @@ class ControlsRecord extends Component {
     Emitter.emit('controls:record:save')
   }
 
+  componentDidUpdate(){
+    const { app,info } = this.props;
+    this._secondsRecorded = info.counter / 30
+    this._hasSurpassedDuration = ((this._secondsRecorded / app.media.audio.totalDuration) > 1)
+  }
+
   render() {
-    const { browser } = this.props;
+    const { browser, info } = this.props;
     const { videoId } = this.context;
     return (
       <div ref="controlsRecord" className="controls-record">
+        <div className="controls-record__info">
+          <span>{info.counter}</span>
+        </div>
         <button  onClick={()=>{
           let _r = !this.state.recording
           this.setState({recording:_r})
@@ -52,6 +61,7 @@ class ControlsRecord extends Component {
   }
 }
 
-export default connect(({ browser }) => ({
+export default connect(({ browser, app }) => ({
   browser,
+  app,
 }), {})(ControlsRecord);

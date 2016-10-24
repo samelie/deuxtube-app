@@ -24,7 +24,8 @@ const CSS_LOADERS = {
 const ASSETS_DIR = "https://storage.googleapis.com/samrad-adddog/www-assets/assets/"
 
 const ENV_VARS = {
-  SOCKET_SERVER: '"http://0.0.0.0:8080"',
+  //SOCKET_SERVER: '"http://0.0.0.0:8080"',
+  SOCKET_SERVER: '"https://rad.wtf/chewb"',
   APP_HOST: '"https://add.dog/"',
   APP_DOMAIN: '"/"',
   ASSETS_DIR: '"https://storage.googleapis.com/samrad-adddog/www-assets/assets/"',

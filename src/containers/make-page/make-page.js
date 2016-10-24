@@ -1,5 +1,9 @@
 import './make-page.scss';
 
+import { bindActionCreators } from 'redux'
+import { exportUrl } from '../../actions/app';
+import {push} from 'react-router-redux';
+
 import React, { Component, PropTypes } from 'react';
 import createFragment from 'react-addons-create-fragment'
 import DashRecorder from '@samelie/dash-player-recorder'
@@ -20,6 +24,7 @@ import DeuxTube from '../../components/deux-tube/deux-tube';
 
 import Query from '../../components/query/query';
 import Controls from '../../components/controls/controls';
+import SavingProgress from '../../components/saving-progress/saving-progress';
 
 class MakePage extends Component {
 
@@ -38,6 +43,13 @@ class MakePage extends Component {
         //background: `url(${process.env.REMOTE_ASSETS_DIR}images/dog.jpg) no-repeat center center fixed`,
       }
     }
+
+    this._recorderProp = {
+      counter: 0
+    }
+    this._savingProgressProp = {
+      progress: 0
+    }
   }
 
   getChildContext() {
@@ -47,10 +59,21 @@ class MakePage extends Component {
   }
 
   componentDidMount() {
-    const { browser, app, params } = this.props;
+    const { browser, app, params, dispatch } = this.props;
     //pipe too heavy i think
     this._recorder = new DashRecorder(Socket.socket, {
-      pipe:false
+      pipe: false
+    })
+
+    this._recorder.on('saved', (obj) => {
+      let { url, name } = obj
+      dispatch(exportUrl(url))
+      const path = `/wow/${name}`
+      dispatch(push(path));
+    })
+
+    this._recorder.on('progress', (percent) => {
+      this._savingProgressProp.progress = percent
     })
 
     Emitter.on('controls:record:save', () => {
@@ -58,7 +81,7 @@ class MakePage extends Component {
       let _s = app.media.audio.range.sliderValue[0]
       let _e = app.media.audio.range.sliderValue[1]
       let _diff = _e - _s
-      //this._recorder.concatFrames()
+        //this._recorder.concatFrames()
       this._recorder.save({
         width: 320,
         height: 240,
@@ -70,9 +93,13 @@ class MakePage extends Component {
         ]
       })
 
-
+      this._saving()
     })
 
+  }
+
+  _saving() {
+    this.refs.make.classList.add('saving')
   }
 
 
@@ -87,7 +114,8 @@ class MakePage extends Component {
   }
 
   _addFrame(buffer) {
-    this._recorder.addFrame(buffer)
+    this._recorderProp.counter++
+      this._recorder.addFrame(buffer)
   }
 
   //<Controls/>
@@ -105,23 +133,29 @@ class MakePage extends Component {
   render() {
     const { browser, params } = this.props;
     return (
-      <div style={this.state.bgImageStyle} className="o-page make">
+      <div ref="make" style={this.state.bgImageStyle} className="o-page make">
 
-        <div className="u-page--col--half">
+        <div className="make--interactive u-page--col--half">
           <div className="make__media">
               <Audio addAudio={this._addAudio.bind(this)}ref="audioTrack"/>
           </div>
           <div className="make__effects">
-            <ControlsRecord ref="controlsRecord"/>
+            <ControlsRecord
+            info={this._recorderProp}
+            ref="controlsRecord"
+            />
           </div>
         </div>
 
-        <div className="u-page--col--half">
+        <div className="make--interactive u-page--col--half">
           <div className="make__player">
               <DeuxTube addFrame={this._addFrame.bind(this)}/>
           </div>
         </div>
 
+        <SavingProgress
+          info={this._savingProgressProp}
+        />
 
       </div>
     );

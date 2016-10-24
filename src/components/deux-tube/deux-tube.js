@@ -40,15 +40,13 @@ class DeuxTube extends Component {
       playlists: [
         //'PLFFC0DE5C257B32AF',
         //'PLRQ2jIXShfkZcTp4rsP8uJotv6fOZas_v',
-        /*'PLZRcgvIPIUuU6sJTDq7bofEBk70fg7-ec',
-        'PLZRcgvIPIUuXtCtqSNSTUKMy-KfUAXYFM'*/
         //'PLuTh1a1eg5vbCa-G0APvdzFqFosBpgmqi',
-        'PLuTh1a1eg5vZ4NbXHavLdiJD3xkyrT7xi',
+        'PLS_gQd8UB-hIynOqgxmApPU6nCRjIBd2y',
         //'PLuTh1a1eg5vbZTFzVvH3_lpTCgPlfzaoV',
         //'PLqi-HJej8buehtiukZnuRoL9yiRJfEBRQ'
       ],
       forcePlaylistUpdate: true
-    }, {
+    }/*, {
       noAutoStart: false,
       videoWidth: 640,
       videoHeight: 460,
@@ -79,7 +77,7 @@ class DeuxTube extends Component {
       ],
       forcePlaylistUpdate: true
 
-    }]
+    }*/]
 
 
     this.state = {
@@ -119,10 +117,9 @@ class DeuxTube extends Component {
     })
 
     Emitter.on('controls:record:record', (isOn) => {
-      //worker
-      console.log(isOn);
       this._recording = isOn
     })
+
     Emitter.on('controls:record:save', () => {
       this._recording = false
       this._effects.pause()
@@ -131,9 +128,10 @@ class DeuxTube extends Component {
     raf.cancel(this._rafHandle)
     let _rc = 0
     this._rafHandle = raf(function tick() {
+      //30fps
       if (_rc % 2 === 0 && _self._recording) {
-
-        addFrame(_self._effects.imageDataArrayBuffer.buffer)
+        //addFrame(_self._effects.imageDataArrayBuffer.buffer)
+        addFrame(_self._effects.getDataURL('image/png'))
       }
       _rc++
       raf(tick)

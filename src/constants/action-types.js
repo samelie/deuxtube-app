@@ -1,4 +1,5 @@
 export const APP_MEDIA_AUDIO = 'APP_MEDIA_AUDIO';
+export const APP_EXPORT_URL = 'APP_EXPORT_URL';
 
 export const RESIZE = 'RESIZE';
 export const ORIENTATION_CHANGE = 'ORIENTATION_CHANGE';

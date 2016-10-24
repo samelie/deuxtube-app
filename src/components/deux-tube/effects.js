@@ -94,6 +94,10 @@ export default class DeuxEffects {
     return this.videoEffects.imageDataArrayBuffer
   }
 
+  getDataURL(){
+    return this.videoEffects.getDataURL()
+  }
+
 
 
 }

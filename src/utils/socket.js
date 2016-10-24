@@ -1,11 +1,11 @@
 import IO from 'socket.io-client';
 const SOCKET = (() => {
-  const socket = IO(process.env.SOCKET_SERVER)
+  const socket = IO(SSS)
   socket.on('handshake', (data) => {
     console.log(`Socket Handshake ${JSON.stringify(data)}`)
   });
   return {
-    socket:socket
+    socket: socket
   }
 })()
 
