@@ -18,7 +18,7 @@ import { Record } from 'immutable';
 });*/
 
 const InitialState = Record({
-  finalUrl:null,
+  finalSave:{},
   media: {
     audio: {
 
@@ -46,7 +46,7 @@ export default function app(state = initialState, action) {
       }
     case APP_EXPORT_URL:
       {
-        return state.set('finalUrl', action.payload)
+        return state.set('finalSave', action.payload)
       }
     default:
       {

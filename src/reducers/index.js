@@ -4,6 +4,7 @@ import { createResponsiveStateReducer } from 'redux-responsive';
 
 import resize from './resize';
 import app from './app';
+import videoTracks from './video_tracks';
 /*import terms from './terms';
 import ui from './ui';
 import projects from './projects';
@@ -15,6 +16,7 @@ export default combineReducers({
   routing,
   resize,
   app,
+  videoTracks,
   browser: createResponsiveStateReducer({
     mobile: 360,
     phablet: 540,

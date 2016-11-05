@@ -1,4 +1,4 @@
-//import './query.scss';
+import './query-input.scss';
 
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
@@ -104,7 +104,10 @@ class QueryInput extends Component {
   render() {
     const { browser } = this.props;
     return (
-      <input ref="input"></input>
+      <input
+       ref="input"
+       className="input"
+      ></input>
     );
   }
 }

@@ -122,7 +122,7 @@ class AudioTrack extends Component {
     let _self = this
     this.audio = new DeuxTubeAudio(socket)
       //dont use emitter
-    this.audio.audio.on('ON_BUFFER_CHUNK', (chunk) => {
+    this.audio.audio.on('ON_BUFFER_CHUNK', (chunk, progress) => {
       addAudio(chunk)
     }, false)
 

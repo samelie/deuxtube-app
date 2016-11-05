@@ -1,4 +1,7 @@
 {
+  "name": "deux-chewb",
+  "version": "1.0.0",
+  "main": "main.js",
   "private": true,
   "dependencies": {
     "animation-frame": "^0.3.0",
@@ -54,6 +57,7 @@
     "chai": "3.5.0",
     "cpy-cli": "1.0.1",
     "css-loader": "^0.23.1",
+    "electron": "^1.4.4",
     "extract-text-webpack-plugin": "^1.0.1",
     "ghooks": "1.3.2",
     "html-webpack-plugin": "^2.22.0",
@@ -100,6 +104,7 @@
     "clean-dist": "rimraf dist && mkdir dist && mkdir dist/js",
     "copy-files": "cpy src/index.html dist",
     "clean-and-copy": "npm run copy-files",
+    "el": "electron .",
     "prestart": "npm run clean-and-copy",
     "start": "webpack-dev-server --env.dev --content-base dist",
     "prebuild": "npm run clean-and-copy",

@@ -13,3 +13,8 @@ export const SVG_DIR = `${REMOTE_ASSETS_DIR}svg/`;
 //TOUR
 export const FILTER_ONLY_MP3 = true
 export const TIME_ON_LOCATION_COVER = 10000
+
+export const VIDEO_WIDTH = 640
+export const VIDEO_HEIGHT = 360
+export const VERBOSE = false
+

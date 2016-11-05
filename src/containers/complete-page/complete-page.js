@@ -1,4 +1,4 @@
-//import './home-page.scss';
+import './complete-page.scss';
 
 import React, { Component, PropTypes } from 'react';
 import {push} from 'react-router-redux';
@@ -7,6 +7,17 @@ import createFragment from 'react-addons-create-fragment'
 
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
+
+import QueryInput from '../../components/query-input/query-input'
+import ActionButton from '../../components/ui/action-button'
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onNavigateTo(dest) {
+      dispatch(push(dest));
+    }
+  };
+};
 
 class CompletePage extends Component {
 
@@ -20,12 +31,56 @@ class CompletePage extends Component {
     }
   }
 
+  onVideoTitled(str){
+
+  }
+
+  onVideoDesced(str){
+
+  }
+
+  makeAnother(){
+    this.props.onNavigateTo('/')
+    EAPI.sendEvent('reload')
+  }
+
+  uploadVideo(){
+    const { app} = this.props;
+
+    global.EAPI.onYoutubeUploaded = (youtube=>{
+      console.log(youtube);
+    })
+
+    EAPI.sendEvent('youtube-upload', {
+      local:app.finalSave.local,
+      title:this.refs.title.value,
+      description:this.refs.describe.value
+    })
+  }
+
   render() {
     const { browser ,app} = this.props;
     return (
       <div  className="o-page complete-page">
-        <h1>WOW</h1>
-        <video src={app.finalUrl} autoPlay ></video>
+        <video src={app.finalSave.url} controls autoPlay loop></video>
+        <input
+          ref="title"
+          placeholder={`title your video`}
+          className="input"
+        ></input>
+        <input
+          ref="describe"
+          placeholder={`description for your video`}
+          className="input"
+        ></input>
+        <ActionButton
+          text={'Make another'}
+          onClick={this.makeAnother.bind(this)}
+        />
+        <ActionButton
+          text={'Share'}
+          onClick={this.uploadVideo.bind(this)}
+        />
       </div>
     );
   }
@@ -35,4 +90,4 @@ class CompletePage extends Component {
 export default connect(({ browser,app }) => ({
   browser,
   app
-}))(CompletePage);
+}),mapDispatchToProps)(CompletePage);

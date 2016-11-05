@@ -12,6 +12,7 @@ import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter';
 import MediaControls from '../media-controls/media-controls'
 import QueryInput from '../query-input/query-input'
+import Input from '../../components/input/input'
 import VideoPlaylist from '../video-playlist/video-playlist'
 
 const smallImageUrl = (id) => (`https://img.youtube.com/vi/${id}/3.jpg`, )
@@ -213,8 +214,8 @@ class AudioTrack extends Component {
           </div>
         </div>
         <QueryInput
-        placeholder={`Paste video or playlist url`}
-        onQueryResponse={this.onInputQuery.bind(this)}
+          placeholder={`Paste video or playlist url`}
+          onQueryResponse={this.onInputQuery.bind(this)}
         />
         <VideoPlaylist
           api={this._playlistApi}

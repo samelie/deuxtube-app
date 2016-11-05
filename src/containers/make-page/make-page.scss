@@ -4,50 +4,108 @@
 @import 'easings';
 .make {
     position: relative;
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     flex-direction: row;
+    background: url('/assets/images/background_make.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
     &__player {
-      position: relative;
-      width:100%;
-      height: 30%;
+        position: relative;
+        width: 100%;
+        height: 30%;
     }
     &__media {
-      position: relative;
-      width:100%;
-      min-height: 240px;
-      height: 20%;
+        position: relative;
+        width: 100%;
+        min-height: 240px;
+        height: 20%;
     }
     &__effects {
-      position: relative;
-      width:100%;
-      height: 20%;
+        position: relative;
+        width: 100%;
+        height: 20%;
     }
     &__tube {
-      position: relative;
-      display: flex;
-      align-items:flex-start;
-      justify-content:flex-start;
-      width:100%;
-      height: 30%;
-      .youtube__query {
         position: relative;
-        width:50%;
-        height: 100%;
-      }
-      .deuxtube__playlist {
-        position: relative;
-        width:50%;
-        height: 100%;
-      }
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        width: 100%;
+        height: 30%;
+        .youtube__query {
+            position: relative;
+            width: 50%;
+            height: 100%;
+        }
+        .deuxtube__playlist {
+            position: relative;
+            width: 50%;
+            height: 100%;
+        }
     }
 }
 
+.make--playerblock {
+    position: relative;
+    width: 100%;
+    height: 70%;
+    background-color: rgba(168, 218, 210, 0.5);
+    display: flex;
+}
+
+.make--effectsblock {
+    position: relative;
+    width: 100%;
+    height: 30%;
+    background-color: rgba(168, 218, 192, 0.5);
+}
+
+.make--youtubeblock {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(218, 168, 212, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+
+.make--youtubeblock--cell{
+
+}
+
+.make--video {
+    position: relative;
+    width: 60%;
+    height: 100%;
+    background-color: rgba(40, 80, 212, 0.5);
+}
+
+.make--media {
+    position: relative;
+    width: 40%;
+    height: 100%;
+    background-color: rgba(130, 20, 212, 0.5);
+    display: flex;
+    flex-direction: column;
+}
+.make--media--cell {
+  position: relative;
+  width: 100%;
+  height: 33.3%;
+}
+.make--effects {
+    position: relative;
+    width: 80%;
+    height: 70%;
+}
+
 .make--interactive {
-  .saving &{
-    display: none;
-  }
+    .saving & {
+        display: none;
+    }
 }

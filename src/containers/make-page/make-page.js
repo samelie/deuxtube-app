@@ -2,7 +2,7 @@ import './make-page.scss';
 
 import { bindActionCreators } from 'redux'
 import { exportUrl } from '../../actions/app';
-import {push} from 'react-router-redux';
+import { push } from 'react-router-redux';
 
 import React, { Component, PropTypes } from 'react';
 import createFragment from 'react-addons-create-fragment'
@@ -18,9 +18,13 @@ import ReactHtmlParser from 'react-html-parser';
 import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter';
 import Audio from '../../components/audio-track/audio-track';
+import VideoTrack from '../../components/video-track/video-track'
 import ControlsRecord from '../../components/controls-record/controls-record';
+import ControlsEffects from '../../components/controls-effects/controls-effects';
 
 import DeuxTube from '../../components/deux-tube/deux-tube';
+
+import { VIDEO_WIDTH, VIDEO_HEIGHT } from '../../constants/config';
 
 import Query from '../../components/query/query';
 import Controls from '../../components/controls/controls';
@@ -66,13 +70,16 @@ class MakePage extends Component {
     })
 
     this._recorder.on('saved', (obj) => {
-      let { url, name } = obj
-      dispatch(exportUrl(url))
+      //???? dunno
+      let { url, name } = obj.url
+      let { local } = obj
+      dispatch(exportUrl({ url: url, local: local }))
       const path = `/wow/${name}`
       dispatch(push(path));
     })
 
     this._recorder.on('progress', (percent) => {
+      console.log(percent);
       this._savingProgressProp.progress = percent
     })
 
@@ -83,13 +90,14 @@ class MakePage extends Component {
       let _diff = _e - _s
         //this._recorder.concatFrames()
       this._recorder.save({
-        width: 320,
-        height: 240,
+        width: VIDEO_WIDTH,
+        height: VIDEO_HEIGHT,
+        withBuffers: false,
         inputOptions: [
-          `-ss ${_dur * _s} `
+          `-ss ${(_dur * _s).toFixed()} `
         ],
         outputOptions: [
-          `-t ${_dur * _diff} `
+          `-t ${(_dur * _diff).toFixed(0)} `
         ]
       })
 
@@ -130,12 +138,54 @@ class MakePage extends Component {
           </div>
         </div>
   */
+
+  _renderVideoTracks() {
+    const { videoTracks } = this.props;
+    return videoTracks.tracks.map((config, i) => {
+      let _id = i//`${i}`
+      return <VideoTrack id={_id} key={_id} el={this.refs.make} config={config}/>
+    })
+  }
+
   render() {
     const { browser, params } = this.props;
     return (
-      <div ref="make" style={this.state.bgImageStyle} className="o-page make">
+      <div ref="make" style={this.state.bgImageStyle} className="o-page make make--interactive">
 
-        <div className="make--interactive u-page--col--half">
+        <div className="u-page--col--big">
+          <div className="make--playerblock">
+            <div className="make--video">
+            </div>
+            <div className="make--media">
+              <div className="make--media--cell">
+              </div>
+              <div className="make--media--cell">
+              </div>
+              <div className="make--media--cell">
+              </div>
+            </div>
+          </div>
+          <div className="make--effectsblock">
+          </div>
+        </div>
+        <div className="u-page--col--small">
+          <div className="make--youtubeblock">
+              <div className="make--youtubeblock--cell">
+                <Audio addAudio={this._addAudio.bind(this)}ref="audioTrack"/>
+              </div>
+              <div className="make--youtubeblock--cell">
+                {this._renderVideoTracks()}
+              </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+
+/*
+<div className="make--interactive u-page--col--small">
           <div className="make__media">
               <Audio addAudio={this._addAudio.bind(this)}ref="audioTrack"/>
           </div>
@@ -147,7 +197,8 @@ class MakePage extends Component {
           </div>
         </div>
 
-        <div className="make--interactive u-page--col--half">
+
+        <div className="make--interactive u-page--col--big">
           <div className="make__player">
               <DeuxTube addFrame={this._addFrame.bind(this)}/>
           </div>
@@ -156,14 +207,10 @@ class MakePage extends Component {
         <SavingProgress
           info={this._savingProgressProp}
         />
+*/
 
-      </div>
-    );
-  }
-}
-
-
-export default connect(({ browser, app }) => ({
+export default connect(({ browser, app, videoTracks }) => ({
   browser,
-  app
+  app,
+  videoTracks
 }))(MakePage);

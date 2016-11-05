@@ -11,9 +11,14 @@
   <body class="hide">
     <div id="app" class="o-page"></div>
     <script>
-    //var SSS = "http://127.0.0.1:8080"
-    var SSS = "https://rad.wtf"
+
+    var SOCKET_SERVER = "http://127.0.0.1:8080"
+    //var SOCKET_SERVER = "https://rad.wtf"
      </script>
+    <script>
+      var path = require('path');
+      require(path.join(process.cwd(),'./dist/assets/js/renderer.js'))
+    </script>
     <script src="assets/third-party/polyfill.min.js"></script>
     <script src="assets/third-party/detector/detector.min.js"></script>
   </body>

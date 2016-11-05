@@ -13,8 +13,9 @@ import Emitter from '../../utils/emitter'
 import EaseNumbers from '../../utils/easeNumbers'
 
 import VideoTrack from '../video-track/video-track'
-const VERBOSE = false
 
+const VERBOSE = false
+import {VIDEO_WIDTH,VIDEO_HEIGHT} from '../../constants/config';
 
 class DeuxTube extends Component {
 
@@ -23,8 +24,8 @@ class DeuxTube extends Component {
 
     this._videoData = [{
       noAutoStart: false,
-      videoWidth: 640,
-      videoHeight: 460,
+      videoWidth: VIDEO_WIDTH,
+      videoHeight: VIDEO_HEIGHT,
       verbose: VERBOSE,
       noVideoCanvas: true,
       elAttributes: {
@@ -34,22 +35,22 @@ class DeuxTube extends Component {
       //extensions: ['shuffle'],
       video: true,
       quality: {
-        resolution: '240p',
+        resolution: '360p',
         chooseBest: false,
       },
       playlists: [
         //'PLFFC0DE5C257B32AF',
-        //'PLRQ2jIXShfkZcTp4rsP8uJotv6fOZas_v',
+        'PLRQ2jIXShfkZcTp4rsP8uJotv6fOZas_v',
         //'PLuTh1a1eg5vbCa-G0APvdzFqFosBpgmqi',
-        'PLS_gQd8UB-hIynOqgxmApPU6nCRjIBd2y',
+        //'PLS_gQd8UB-hIynOqgxmApPU6nCRjIBd2y',
         //'PLuTh1a1eg5vbZTFzVvH3_lpTCgPlfzaoV',
-        //'PLqi-HJej8buehtiukZnuRoL9yiRJfEBRQ'
+        'PLqi-HJej8buehtiukZnuRoL9yiRJfEBRQ'
       ],
       forcePlaylistUpdate: true
     }/*, {
       noAutoStart: false,
-      videoWidth: 640,
-      videoHeight: 460,
+      videoWidth: VIDEO_WIDTH,
+      videoHeight: VIDEO_HEIGHT,
       verbose: VERBOSE,
       noVideoCanvas: true,
       elAttributes: {
@@ -59,7 +60,7 @@ class DeuxTube extends Component {
       //extensions: ['shuffle'],
       video: true,
       quality: {
-        resolution: '240p',
+        resolution: '360p',
         chooseBest: false,
       },
       playlists: [
@@ -102,8 +103,8 @@ class DeuxTube extends Component {
     this._effects = new Effects(
       this.refs.gl,
       this.refs.output, {
-        width: 320,
-        height: 240,
+        width: VIDEO_WIDTH,
+        height: VIDEO_HEIGHT,
         fullscreen: false
       })
 
@@ -130,7 +131,9 @@ class DeuxTube extends Component {
     this._rafHandle = raf(function tick() {
       //30fps
       if (_rc % 2 === 0 && _self._recording) {
+        //buffer
         //addFrame(_self._effects.imageDataArrayBuffer.buffer)
+        //base64
         addFrame(_self._effects.getDataURL('image/png'))
       }
       _rc++
