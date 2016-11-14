@@ -1,11 +1,18 @@
-.video-track{
-  position: relative;
-  max-width: 50%;
-  margin:0;
-
-  .playing__wrapper{
+@import 'mixins';
+@import 'colors';
+.video-track {
     position: relative;
-    display: flex;
-    width:100%;
-  }
+    max-width: 100%;
+    margin: 0;
+    .playing__wrapper {
+        position: relative;
+        display: flex;
+        width: 100%;
+
+        @include isSelected($color: $c-green);
+    }
+
+    &__playing {
+
+    }
 }

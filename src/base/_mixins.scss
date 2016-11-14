@@ -1,0 +1,17 @@
+@mixin isSelected($color) {
+    &::after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        content: "";
+        border: 0px $color solid;
+        pointer-events: none;
+    }
+    &.is-selected {
+        &::after {
+            border: 4px $color solid;
+        }
+    }
+}

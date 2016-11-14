@@ -1,6 +1,6 @@
 import GUI from './GUI';
 import _ from 'lodash'
-import VideoEffects from '@samelie/video-effects'
+//import VideoEffects from '@samelie/video-effects'
 import EaseNumbers from '../../utils/easeNumbers'
 let _o = {
   texture: {
@@ -30,6 +30,10 @@ let _o = {
   uContrast: {
     type: 'float',
     value: 0.01
+  },
+  uHue: {
+    type: 'float',
+    value: 0.0
   },
   uKeyVideoIndex: {
     type: 'int',

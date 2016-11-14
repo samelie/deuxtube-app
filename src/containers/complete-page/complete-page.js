@@ -51,8 +51,8 @@ class CompletePage extends Component {
       console.log(youtube);
     })
 
-    EAPI.sendEvent('youtube-upload', {
-      local:app.finalSave.local,
+    global.EAPI.sendEvent('youtube-upload', {
+      local:app.get('finalSave').local,
       title:this.refs.title.value,
       description:this.refs.describe.value
     })
@@ -62,7 +62,7 @@ class CompletePage extends Component {
     const { browser ,app} = this.props;
     return (
       <div  className="o-page complete-page">
-        <video src={app.finalSave.url} controls autoPlay loop></video>
+        <video src={app.get('finalSave').url} controls autoPlay loop></video>
         <input
           ref="title"
           placeholder={`title your video`}

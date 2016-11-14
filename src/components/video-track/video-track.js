@@ -5,9 +5,11 @@ import Q from 'bluebird';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { mediaAudioChanged } from '../../actions/app';
+import { createPlaylist, setPlaylist } from '../../actions/playlists';
 
 import Video from './video'
 import Keys from '../../utils/keys';
+import { NUMBERS } from '../../utils/keys';
 import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter';
 import MediaControls from '../media-controls/media-controls'
@@ -93,7 +95,8 @@ class AudioTrack extends Component {
   }
 
   componentDidMount() {
-    const { el, config } = this.props;
+    const { el, config, createPlaylist, setPlaylist } = this.props;
+    const { id } = config
     this._player = new Video({ el: el, socket: Socket.socket })
     this._player.addSource(config)
     this._player.start()
@@ -108,12 +111,15 @@ class AudioTrack extends Component {
 
     this._player.on('PLAYLIST', (items) => {
       //we dont show the currrent video here??
-      this.setState({ 'playlist': [...items] })
+      setPlaylist({ key: id, value: [...items] })
+        //this.setState({ 'playlist': [...items] })
     })
 
     this._player.on('VO_ADDED', (vo, msVo) => {
+      console.log(msVo);
+      console.log(vo);
       let _current = this.state.currentVideo
-      let _lastref = vo.currentRefIndexs[vo.currentRefIndexs.length-1]
+      let _lastref = vo.currentRefIndexs[vo.currentRefIndexs.length - 1]
       this.setState({
         currentVideo: Object.assign({},
           _current, {
@@ -121,38 +127,80 @@ class AudioTrack extends Component {
           }
         )
       })
+      this._onVideoProgress(_lastref / vo.referencesLength)
     })
 
     this._player.on('VIDEO_FINISHED', (item) => {
       this._onVideoProgress(0)
-      this.setState({
-        currentVideo: {
-          title: item.snippet.title,
-          videoId: item.snippet.resourceId.videoId
-        }
-      })
+      if (item) {
+        this.setState({
+          currentVideo: {
+            title: item.snippet.title,
+            videoId: item.snippet.resourceId.videoId
+          }
+        })
+      }
     })
-
-    this._addKeys()
 
     Emitter.emit(`videotrack:el`, this._player.vjPlayer.mediaSources[0][0].el)
 
     Emitter.on('controls:record:save', () => {
       this.controller.pause()
     })
+
+    createPlaylist(id)
   }
 
-  _addKeys() {
-    window.addEventListener('keydown', (e) => {
-      if (e.keyCode === Keys.SHIFT) {
-        this._shiftDown = true
+  componentWillReceiveProps(nextProps) {
+    let { id,app, keyboard } = this.props
+    let _playlistNow = nextProps.playlists.get(id)
+
+    if (_playlistNow) {
+      let action = _playlistNow.get('playlistAction')
+        //fires twice?
+      if (action) {
+        let { type, videoId, item } = action
+        switch (action.type) {
+          case 'move':
+            this._moveVideoToFrontQueue(videoId, item)
+            break;
+          case 'delete':
+            this._removeVideoFromQueue(videoId)
+            break;
+        }
       }
-    })
-    window.addEventListener('keyup', (e) => {
-      if (e.keyCode === Keys.SHIFT) {
-        this._shiftDown = false
+    }
+    if (app.get('saving')) {
+      this.controller.pause()
+    }
+
+    this._processKeyboard(keyboard)
+  }
+
+  /*
+   loop over the numbers and match the video index
+    with the state of that key
+  */
+  _processKeyboard(keyboard) {
+    let { index } = this.props
+    let selectedVideoTracks = NUMBERS.filter((num, numIndex) => {
+      let _keyState = keyboard.get('selectionMap')[num]
+      if (index === numIndex && _keyState) {
+        return true
       }
+      return false
     })
+    let _isSelected = !!selectedVideoTracks[index]
+    this._setSelectedClass(_isSelected)
+  }
+
+  _setSelectedClass(isSelected) {
+    let _clazz = "is-selected"
+    if (isSelected) {
+      this.refs.videoTrackWrapper.classList.add(_clazz)
+    } else {
+      this.refs.videoTrackWrapper.classList.remove(_clazz)
+    }
   }
 
   _removeKeys() {
@@ -190,7 +238,8 @@ class AudioTrack extends Component {
 
 
   render() {
-    const { browser } = this.props;
+    const { browser, config } = this.props;
+    const { id } = config
 
     let _sliders = this.sliderData.map(slider => {
       return <MediaControls ref = { slider.key }
@@ -202,10 +251,9 @@ class AudioTrack extends Component {
 
     return (
       <div ref="videoTrack" className="video-track">
-        {[..._sliders]}
         <div className="video-track__playing">
           <div>{this.state.currentVideo.title}</div>
-          <div className="playing__wrapper">
+          <div ref="videoTrackWrapper" className="playing__wrapper">
             <img src={smallImageUrl(this.state.currentVideo.videoId)}></img>
             <div className="playing__info">
               <div>{this.state.mediaSourceState}</div>
@@ -213,20 +261,31 @@ class AudioTrack extends Component {
             </div>
           </div>
         </div>
+        {[..._sliders]}
         <QueryInput
+          id={id}
+          className="input-query"
           placeholder={`Paste video or playlist url`}
           onQueryResponse={this.onInputQuery.bind(this)}
         />
-        <VideoPlaylist
-          api={this._playlistApi}
-          className="video-playlist--query"
-          playlist={this.state.playlist}
-         />
+
       </div>
     );
   }
 }
-
-export default connect(({ browser }) => ({
+/*
+<VideoPlaylist
+          api={this._playlistApi}
+          className="video-playlist--query"
+          playlist={this.state.playlist}
+         />
+*/
+export default connect(({ app,browser, playlists, keyboard }) => ({
+  app,
   browser,
-}), {})(AudioTrack);
+  playlists,
+  keyboard,
+}), {
+  createPlaylist,
+  setPlaylist,
+})(AudioTrack);

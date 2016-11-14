@@ -9,6 +9,8 @@ import YoutubeSocket from '@samelie/dash-player-youtube-socket'
 import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter'
 
+import { setQuery } from '../../actions/query';
+
 //first
 const YOUTUBE_VIDEO_RE = /(youtu\.be\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v)\/))([^\?&"'>]+)/
   //second
@@ -53,7 +55,7 @@ class QueryInput extends Component {
   }
 
   _onSearchClicked(value) {
-    const { onQueryResponse } = this.props;
+    const { onQueryResponse,setQuery,id } = this.props;
     value = value || this.refs.input.value
     let _videoId = YOUTUBE_VIDEO_RE.exec(value)
     if (_videoId) {
@@ -76,6 +78,11 @@ class QueryInput extends Component {
         .then(results => {
           onQueryResponse(results)
         }).finally()
+    }else{
+      this._search(value)
+        .then(results => {
+          setQuery({id, results})
+        }).finally()
     }
 
     this.refs.input.value = ""
@@ -84,6 +91,13 @@ class QueryInput extends Component {
         .then(results => {
           onQueryResponse(results)
         }).finally()*/
+  }
+
+  _search(v) {
+    return this._socket.youtube.search({
+      q: v,
+      force: true
+    })
   }
 
   _makePlaylistQuery(v) {
@@ -114,4 +128,6 @@ class QueryInput extends Component {
 
 export default connect(({ browser }) => ({
   browser,
-}), {})(QueryInput);
+}), {
+  setQuery
+})(QueryInput);

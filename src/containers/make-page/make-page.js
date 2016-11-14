@@ -8,6 +8,7 @@ import React, { Component, PropTypes } from 'react';
 import createFragment from 'react-addons-create-fragment'
 import DashRecorder from '@samelie/dash-player-recorder'
 
+import Q from 'bluebird';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { fetchJson } from '../../utils/fetch';
@@ -19,12 +20,18 @@ import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter';
 import Audio from '../../components/audio-track/audio-track';
 import VideoTrack from '../../components/video-track/video-track'
+import QueryResults from '../../components/query-results/query-results'
 import ControlsRecord from '../../components/controls-record/controls-record';
 import ControlsEffects from '../../components/controls-effects/controls-effects';
+import VideoPlaylist from '../../components/video-playlist/video-playlist'
 
 import DeuxTube from '../../components/deux-tube/deux-tube';
 
-import { VIDEO_WIDTH, VIDEO_HEIGHT } from '../../constants/config';
+import {
+  VIDEO_WIDTH,
+  VIDEO_HEIGHT,
+  RECORDING_FRAME_EXT
+} from '../../constants/config';
 
 import Query from '../../components/query/query';
 import Controls from '../../components/controls/controls';
@@ -62,6 +69,65 @@ class MakePage extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    let { app, audio, query } = nextProps
+    const { dispatch } = this.props;
+    if (app.get('saving') && !this.state.saving) {
+      this.setState({ saving: true })
+      let _media = audio.get('track')
+      let _dur = _media.totalDuration
+      let _s = _media.range.sliderValue[0]
+      let _e = _media.range.sliderValue[1]
+      let _diff = _e - _s
+
+      if (process.env.IS_APP) {
+
+        Q.map(this._recorder.frameBuffers, (buffer) => {
+            return global.recorder.addFrame(buffer)
+          }, { concurrency: 1 })
+          .then(r => {
+            this._recorder.frameBuffers.length = 0
+
+            global.recorder.save({
+                width: VIDEO_WIDTH,
+                height: VIDEO_HEIGHT,
+                withBuffers: false,
+                inputOptions: [
+                  `-ss ${(_dur * _s).toFixed()} `
+                ],
+                outputOptions: [
+                  `-t ${(_dur * _diff).toFixed(0)} `
+                ]
+              })
+              .then(obj => {
+                console.log(obj);
+                //???? dunno
+                let { url, name } = obj.url
+                let { local } = obj
+                dispatch(exportUrl({ url: url, local: local }))
+                const path = `/wow/${name}`
+                dispatch(push(path));
+              })
+          }).finally()
+
+      } else {
+        this._recorder.save({
+          width: VIDEO_WIDTH,
+          height: VIDEO_HEIGHT,
+          frameExt: RECORDING_FRAME_EXT,
+          withBuffers: false,
+          inputOptions: [
+            `-ss ${(_dur * _s).toFixed()} `
+          ],
+          outputOptions: [
+            `-t ${(_dur * _diff).toFixed(0)} `
+          ]
+        })
+      }
+    }
+    this._renderVideoQueryResults(nextProps)
+  }
+
   componentDidMount() {
     const { browser, app, params, dispatch } = this.props;
     //pipe too heavy i think
@@ -84,26 +150,15 @@ class MakePage extends Component {
     })
 
     Emitter.on('controls:record:save', () => {
-      let _dur = app.media.audio.totalDuration
-      let _s = app.media.audio.range.sliderValue[0]
-      let _e = app.media.audio.range.sliderValue[1]
-      let _diff = _e - _s
-        //this._recorder.concatFrames()
-      this._recorder.save({
-        width: VIDEO_WIDTH,
-        height: VIDEO_HEIGHT,
-        withBuffers: false,
-        inputOptions: [
-          `-ss ${(_dur * _s).toFixed()} `
-        ],
-        outputOptions: [
-          `-t ${(_dur * _diff).toFixed(0)} `
-        ]
-      })
+      /* let _dur = app.media.audio.totalDuration
+       let _s = app.media.audio.range.sliderValue[0]
+       let _e = app.media.audio.range.sliderValue[1]
+       let _diff = _e - _s*/
+      //this._recorder.concatFrames()
 
-      this._saving()
+
+      //this._saving()
     })
-
   }
 
   _saving() {
@@ -122,8 +177,7 @@ class MakePage extends Component {
   }
 
   _addFrame(buffer) {
-    this._recorderProp.counter++
-      this._recorder.addFrame(buffer)
+    this._recorder.addFrame(buffer)
   }
 
   //<Controls/>
@@ -139,11 +193,49 @@ class MakePage extends Component {
         </div>
   */
 
+  _renderVideoPlaylist() {
+    const { playlists } = this.props;
+    return playlists.map(playlistObj => {
+      return (
+        <div className="make--media--cell">
+          <VideoPlaylist
+            id={playlistObj.get('id')}
+            className="video-playlist--query"
+            playlist={playlistObj.get('playlist')}
+           />
+         </div>
+      )
+    })
+  }
+
+  _renderVideoQueryResults(props) {
+    const { query } = props || this.props;
+    const results = query.get('results')
+    if (!results) {
+      return (<div></div>)
+    }
+    return (
+      <div className="make--media--cell">
+          <QueryResults
+            id={results.id}
+            className="video-playlist--query"
+            playlist={results.videoIds}
+        />
+      </div>
+    )
+  }
+
   _renderVideoTracks() {
     const { videoTracks } = this.props;
-    return videoTracks.tracks.map((config, i) => {
-      let _id = i//`${i}`
-      return <VideoTrack id={_id} key={_id} el={this.refs.make} config={config}/>
+    return videoTracks.tracks.map((config, index) => {
+      let _id = config.id
+      return <VideoTrack
+        index={index}
+        id={_id}
+        key={_id}
+        el={this.refs.make}
+        config={config}
+        />
     })
   }
 
@@ -155,17 +247,18 @@ class MakePage extends Component {
         <div className="u-page--col--big">
           <div className="make--playerblock">
             <div className="make--video">
+              <DeuxTube addFrame={this._addFrame.bind(this)}/>
             </div>
             <div className="make--media">
-              <div className="make--media--cell">
-              </div>
-              <div className="make--media--cell">
-              </div>
-              <div className="make--media--cell">
-              </div>
+
+              {this._renderVideoPlaylist()}
+              {this._renderVideoQueryResults()}
+
             </div>
           </div>
           <div className="make--effectsblock">
+            <ControlsRecord/>
+            <ControlsEffects/>
           </div>
         </div>
         <div className="u-page--col--small">
@@ -182,6 +275,15 @@ class MakePage extends Component {
     );
   }
 }
+
+/*
+<div className="make--media--cell">
+              </div>
+              <div className="make--media--cell">
+              </div>
+              <div className="make--media--cell">
+              </div>
+*/
 
 
 /*
@@ -209,8 +311,11 @@ class MakePage extends Component {
         />
 */
 
-export default connect(({ browser, app, videoTracks }) => ({
+export default connect(({ browser, app, audio,query, videoTracks, playlists }) => ({
   browser,
   app,
-  videoTracks
+  audio,
+  query,
+  videoTracks,
+  playlists,
 }))(MakePage);

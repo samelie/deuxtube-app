@@ -60,7 +60,7 @@ class LandingPage extends Component {
   }
 
   onStart() {
-    let v = this._url || "https://www.youtube.com/watch?v=JnCluApO0Kw"
+    let v = this._url || "https://www.youtube.com/watch?v=jbGTggv8IEI"
     this._parseAndNavigate(v)
   }
 

@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import raf from 'raf';
 import { connect } from 'react-redux';
+import { update } from '../../actions/video_record';
 
 import Gui from './gui'
 import Effects from './effects';
@@ -12,77 +13,24 @@ import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter'
 import EaseNumbers from '../../utils/easeNumbers'
 
-import VideoTrack from '../video-track/video-track'
-
 const VERBOSE = false
-import {VIDEO_WIDTH,VIDEO_HEIGHT} from '../../constants/config';
+import {
+  VIDEO_WIDTH,
+  VIDEO_HEIGHT,
+  RECORDING_FRAME_FMT,
+  RECORDING_FRAME_Q
+} from '../../constants/config';
 
 class DeuxTube extends Component {
 
   constructor(props) {
     super(props)
 
-    this._videoData = [{
-      noAutoStart: false,
-      videoWidth: VIDEO_WIDTH,
-      videoHeight: VIDEO_HEIGHT,
-      verbose: VERBOSE,
-      noVideoCanvas: true,
-      elAttributes: {
-        muted: true
-      },
-      extensions: ['loop', 'musicVideo'],
-      //extensions: ['shuffle'],
-      video: true,
-      quality: {
-        resolution: '360p',
-        chooseBest: false,
-      },
-      playlists: [
-        //'PLFFC0DE5C257B32AF',
-        'PLRQ2jIXShfkZcTp4rsP8uJotv6fOZas_v',
-        //'PLuTh1a1eg5vbCa-G0APvdzFqFosBpgmqi',
-        //'PLS_gQd8UB-hIynOqgxmApPU6nCRjIBd2y',
-        //'PLuTh1a1eg5vbZTFzVvH3_lpTCgPlfzaoV',
-        'PLqi-HJej8buehtiukZnuRoL9yiRJfEBRQ'
-      ],
-      forcePlaylistUpdate: true
-    }/*, {
-      noAutoStart: false,
-      videoWidth: VIDEO_WIDTH,
-      videoHeight: VIDEO_HEIGHT,
-      verbose: VERBOSE,
-      noVideoCanvas: true,
-      elAttributes: {
-        muted: true
-      },
-      extensions: ['loop'],
-      //extensions: ['shuffle'],
-      video: true,
-      quality: {
-        resolution: '360p',
-        chooseBest: false,
-      },
-      playlists: [
-        'PLRQ2jIXShfkZcTp4rsP8uJotv6fOZas_v',
-        //'PLZRcgvIPIUuW22caHjgZZAvTnH3QhvPNY'
-        //'PLZRcgvIPIUuXpCwC7vNlO05wR8wsBakNO'
-        //'PLZRcgvIPIUuVGLl0qf6-NXxIk2L4GdxaO',
-        //'PLuTh1a1eg5vZ4NbXHavLdiJD3xkyrT7xi',
-        //'PLqi-HJej8bufOfvfQWK6qJRhagFEJPeGk'
-        //'PLBm5UHsvUTFphuF0ClFFqE7M_G0iPu4FT',
-        //'PLuTh1a1eg5vY3PeMoaPs_X_0HqKgsOnDO',
-        //'PLL-b-neHTAtMy8gpvq3Ld94id0Xl5KI1j',
-        //'PLuTh1a1eg5vZ4NbXHavLdiJD3xkyrT7xi',
-        //'PLuTh1a1eg5vbZTFzVvH3_lpTCgPlfzaoV'
-      ],
-      forcePlaylistUpdate: true
-
-    }*/]
-
-
     this.state = {
-      ready: false
+      saving: false,
+      recording: false,
+      ready: false,
+      effects: {}
     }
 
     this._guiProps = {
@@ -95,9 +43,66 @@ class DeuxTube extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    let { app, effects } = nextProps
+    this.setState({
+      recording: app.get('recording'),
+      saving: app.get('saving')
+    });
+    if (app.get('saving')) {
+      this._effects.pause()
+    }
+    this._updateEffectsUniforms(effects)
+  }
+
+  _updateEffectsUniforms(nextEffects) {
+    let updatedEffect = nextEffects.get('updatedEffect')
+      //ugly
+    let _value = updatedEffect.value
+    if (updatedEffect.key === 'uBlendMode' &&
+      !Number.isInteger(_value)) {
+      _value = Math.floor(nextEffects.get('totalBlendModes') * _value)
+    }
+    //is an effect uniform
+    if (updatedEffect.isUniform) {
+      this._effects.changedValue(
+        updatedEffect.key,
+        _value
+      )
+    }
+  }
+
+  _setEffectUniforms() {
+    let { effects } = this.props
+    let _effects = effects.toObject()
+    let _e = {}
+    _.forIn(_effects, (group) => {
+      _.forIn(group, (effect) => {
+        if (effect.isUniform) {
+          _e[effect.key] = {
+            type: effect.type,
+            value: effect.value
+          }
+        }
+      })
+    })
+    return _e
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return false;
+  }
+
   componentDidMount() {
     let _self = this
-    let {addFrame} = this.props
+    let {
+      app,
+      effects,
+      addFrame,
+      videoEls,
+      videoTracks,
+      update
+    } = this.props
     this.setState({ ready: true })
 
     this._effects = new Effects(
@@ -111,30 +116,32 @@ class DeuxTube extends Component {
     //send from the videoTrack, should have passed a prop func
     Emitter.on(`videotrack:el`, (el) => {
       this._effects.addSource(el, _c)
-      let _c = (this._effects._sources.length === this._videoData.length)
+      let _c = (this._effects._sources.length === videoTracks.tracks.length)
       if (_c) {
-        this._effects.ready()
+        this._effects.ready(this._setEffectUniforms())
       }
-    })
-
-    Emitter.on('controls:record:record', (isOn) => {
-      this._recording = isOn
-    })
-
-    Emitter.on('controls:record:save', () => {
-      this._recording = false
-      this._effects.pause()
     })
 
     raf.cancel(this._rafHandle)
     let _rc = 0
+    let _frameCount = 0
     this._rafHandle = raf(function tick() {
       //30fps
-      if (_rc % 2 === 0 && _self._recording) {
+      if (_rc % 2 === 0 && _self.state.recording) {
         //buffer
         //addFrame(_self._effects.imageDataArrayBuffer.buffer)
         //base64
-        addFrame(_self._effects.getDataURL('image/png'))
+        if (process.env.IS_APP) {
+          global.recorder.addFrame(
+            _self._effects.getDataURL(RECORDING_FRAME_FMT, RECORDING_FRAME_Q)
+          )
+        } else {
+          addFrame(_self._effects.getDataURL(RECORDING_FRAME_FMT, RECORDING_FRAME_Q))
+        }
+        _frameCount++;
+        update(_frameCount)
+          //global.EAPI.sendEvent('record-frame', _self._effects.getDataURL('image/png'))
+          //global.recorder.addFrame(_self._effects.getDataURL('image/png'))
       }
       _rc++
       raf(tick)
@@ -147,28 +154,33 @@ class DeuxTube extends Component {
     if (!this.state.ready) {
       return (
         <div ref="deuxTube" className="deux-tube">
-        <canvas ref="output"></canvas>
-        <canvas ref="gl"></canvas>
+          <canvas ref="output" className="output-canvas"></canvas>
+          <canvas ref="gl" className="gl-canvas"></canvas>
         </div>
       );
     }
-    let _videos = this._videoData.map((config, i) => {
-      let _id = `video${i}`
-      return <VideoTrack id={_id} key={_id} el={this.refs.deuxTube} config={config}/>
-    })
-    return (
+    /*return (
       <div ref="deuxTube" className="deux-tube">
         <canvas ref="output" className="output-canvas"></canvas>
         <canvas ref="gl" className="gl-canvas"></canvas>
-        <div className="deux-tube__videos">
-          {[..._videos]}
-        </div>
         <Gui effects={this._guiProps.effects}/>
       </div>
-    );
+    );*/
   }
 }
 
-export default connect(({ browser }) => ({
+export default connect(({
+  app,
+  effects,
   browser,
-}), {})(DeuxTube);
+  videoRecord,
+  videoTracks
+}) => ({
+  app,
+  effects,
+  videoRecord,
+  browser,
+  videoTracks,
+}), {
+  update
+})(DeuxTube);

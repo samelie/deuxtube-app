@@ -4,20 +4,24 @@ import { Link } from 'react-router';
 import Q from 'bluebird';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { mediaAudioChanged } from '../../actions/app';
+import { audioSettingsChanged } from '../../actions/audio';
+import { audioLoaded } from '../../actions/audio';
 
-
-import AF from 'animation-frame'
+import loop from 'raf-loop'
+import raf from 'raf';
 import Workers from '../../utils/workers';
 import Emitter from '../../utils/emitter';
 import Socket from '../../utils/socket';
 import DeuxTubeAudio from './audio'
 import MediaControls from '../media-controls/media-controls'
 
+import {
+  AUDIO_CHUNKS_TO_LOAD,
+} from '../../constants/config';
+
 const VERBOSE = false
 
 const ARRAY_SLICE = 'onmessage=function(e){var data=e.data;var start=data.start;var end=data.end;var f=new Uint8Array(data.b);postMessage(f.slice(start,end))};'
-const AUDIO_CHUNKS_TO_LOAD = 2
 
 class AudioTrack extends Component {
 
@@ -77,27 +81,10 @@ class AudioTrack extends Component {
         sliderValue: this.sliderData[1].value
       }
     }
-
-    //this._sliceWorker = Workers.create(ARRAY_SLICE)
-
-    Emitter.on('controls:record:save', () => {
-      this.audio.sound.stop()
-        //worker
-        /*
-
-        not need :((
-
-        this.getSaveBuffer()
-          .then(buffer => {
-            addAudio(buffer)
-          })
-          .catch(err => {
-            console.error(err.toString());
-          })*/
-    })
   }
 
   _updateSeekState(obj) {
+    console.log('_updateSeekState');
     let _v = Object.assign({}, this.state.seek, obj)
     this.setState({
       seek: _v
@@ -105,6 +92,7 @@ class AudioTrack extends Component {
   }
 
   _updateRangeState(obj) {
+    console.log('_updateRangeState');
     let _v = Object.assign({}, this.state.range, obj)
     this.setState({
       range: _v
@@ -118,12 +106,18 @@ class AudioTrack extends Component {
   componentDidMount() {
     const socket = Socket.socket
     const { videoId } = this.context;
-    const { addAudio } = this.props;
+    const { addAudio, audioLoaded } = this.props;
     let _self = this
     this.audio = new DeuxTubeAudio(socket)
       //dont use emitter
     this.audio.audio.on('ON_BUFFER_CHUNK', (chunk, progress) => {
-      addAudio(chunk)
+      //addAudio(chunk)
+      //global.EAPI.sendEvent('record-audio', chunk)
+      if (process.env.IS_APP) {
+        global.recorder.addAudio(chunk)
+      } else {
+        addAudio(chunk)
+      }
     }, false)
 
     this.audio.load(videoId, AUDIO_CHUNKS_TO_LOAD)
@@ -133,6 +127,7 @@ class AudioTrack extends Component {
           duration: sound.duration
         })
         this._startUpdate()
+        audioLoaded({ duration: sound.duration })
       })
 
     this.audio.onPeakSignal.add(peak => {
@@ -156,27 +151,50 @@ class AudioTrack extends Component {
 
   }
 
-  componentWillUnmount() {
-    this._anim.cancel(this._rafHandle)
-    this.audio.sound.destroy()
+  componentWillUnmount() {}
+
+  componentWillReceiveProps(nextProps) {
+    const { app } = nextProps;
+    const { sound } = this.audio
+    if (sound) {
+      if (app.get('recording')) {
+        if (!sound.playing) {
+          sound.play()
+        }
+      } else {
+        if (sound.playing) {
+          sound.pause()
+        }
+      }
+      if (app.get('saving') && !this.state.saving) {
+        this.setState({
+          saving: true
+        })
+        this._destroySound()
+      }
+    }
   }
 
+  /*shouldComponentUpdate(state){
+    return false
+  }*/
+
   componentWillUpdate(props, state) {
-    const { mediaAudioChanged } = this.props;
-    mediaAudioChanged(state)
+    const { audioSettingsChanged } = this.props;
+    audioSettingsChanged(state)
+  }
+
+  _destroySound() {
+    this.audio.sound.stop()
+    this._rafHandle.stop()
+    this.audio.sound.destroy()
   }
 
   _startUpdate() {
     let _self = this
-    this._anim = new AF();
-    this._update()
-  }
-
-  _update() {
-    this._rafHandle = this._anim.request((t) => {
-      this.onSoundProgress()
-      this._update()
-    });
+    this._rafHandle = loop(function(dt) {
+      _self.onSoundProgress()
+    }).start()
   }
 
   onSoundProgress() {
@@ -272,8 +290,10 @@ class AudioTrack extends Component {
   }
 }
 
-export default connect(({ browser }) => ({
+export default connect(({ browser, app }) => ({
   browser,
+  app,
 }), {
-  mediaAudioChanged
+  audioSettingsChanged,
+  audioLoaded,
 })(AudioTrack);

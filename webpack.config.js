@@ -25,6 +25,7 @@ const ASSETS_DIR = "https://storage.googleapis.com/samrad-adddog/www-assets/asse
 
 const ENV_VARS = {
   //SOCKET_SERVER: '"http://0.0.0.0:8080"',
+  IS_APP: true,
   SOCKET_SERVER: '"https://rad.wtf/chewb"',
   APP_HOST: '"https://add.dog/"',
   APP_DOMAIN: '"/"',
@@ -68,6 +69,7 @@ module.exports = env => {
     output: {
       filename: 'bundle.[name].[chunkhash].js',
       path: constants.DIST,
+      publicPath:"/",
       pathinfo: !env.prod,
     },
     context: constants.SRC_DIR,

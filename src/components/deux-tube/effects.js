@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import VideoEffects from '@samelie/video-effects'
 import EaseNumbers from '../../utils/easeNumbers'
-
 let _o = {
   texture: {
     type: 'uniform1i',
@@ -15,15 +14,23 @@ let _o = {
     type: 'float',
     value: 0.01
   },
+  uThreshold: {
+    type: 'float',
+    value: 0.7
+  },
+  uColorEffectsOne: {
+    type: 'float',
+    value: 1.
+  },
+  uColorEffectsTwo: {
+    type: 'float',
+    value: 1.
+  },
   uBrightness: {
     type: 'float',
     value: 0.01
   },
-  uSaturationKey: {
-    type: 'float',
-    value: 1.01
-  },
-  uSaturationMix: {
+  uSaturation: {
     type: 'float',
     value: 1.01
   },
@@ -31,10 +38,28 @@ let _o = {
     type: 'float',
     value: 0.01
   },
+  uHue: {
+    type: 'float',
+    value: 0.0
+  },
   uKeyVideoIndex: {
     type: 'int',
     value: 0
-  }
+  },
+
+  uBlendMode: {
+    type: 'int',
+    value: 0
+  },
+  uBlendOpacity: {
+    type: 'float',
+    value: 1.0
+  },
+  uBlendMix: {
+    type: 'float',
+    value: 1.0
+  },
+
 }
 
 export default class DeuxEffects {
@@ -50,52 +75,60 @@ export default class DeuxEffects {
     this._sources.push(el)
   }
 
-  ready(){
-    this.videoEffects = new VideoEffects(
+  ready(obj) {
+    this.videoEffects = new window.VideoEffects(
       this.glCanvas,
       this.targetEl,
       this._sources[0],
       this._sources[1],
       this.options
     )
-    let _uniforms = this.videoEffects .setUniforms(_o)
+    let _uniforms = this.videoEffects
+      .setUniforms(
+        Object.assign({}, obj, _o)
+      )
     this._uniforms = _uniforms
+  }
+
+  setUniforms(obj) {
+    console.log(obj);
   }
 
   start() {}
 
-  update(){
+  update() {
     this._uniforms.uSaturationKey = this._satKey.value
   }
 
-  changedValue(key, val){
-    this._uniforms[key] = val
+  changedValue(key, val) {
+    if (key) {
+      this._uniforms[key] = val
+    }
   }
 
-  changeKey(){
+  changeKey() {
     let _c = this._uniforms.uKeyVideoIndex || 0
     _c++
-    if(_c > 1){
+    if (_c > 1) {
       _c = 0
     }
     this._uniforms.uKeyVideoIndex = _c
-    console.log(this._uniforms.uKeyVideoIndex );
   }
 
-  pause(){
+  pause() {
     this.videoEffects.pause()
   }
 
-  resume(){
+  resume() {
     this.videoEffects.resume()
   }
 
-  get imageDataArrayBuffer(){
+  get imageDataArrayBuffer() {
     return this.videoEffects.imageDataArrayBuffer
   }
 
-  getDataURL(){
-    return this.videoEffects.getDataURL()
+  getDataURL(enc, q) {
+    return this.videoEffects.getDataURL(enc, q)
   }
 
 

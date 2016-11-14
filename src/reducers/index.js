@@ -5,6 +5,13 @@ import { createResponsiveStateReducer } from 'redux-responsive';
 import resize from './resize';
 import app from './app';
 import videoTracks from './video_tracks';
+import playlists from './playlists';
+import keyboard from './keyboard';
+import effects from './effects';
+import query from './query';
+import audio from './audio';
+import mouse from './mouse';
+import videoRecord from './video_record';
 /*import terms from './terms';
 import ui from './ui';
 import projects from './projects';
@@ -15,8 +22,15 @@ import platform from './platform';*/
 export default combineReducers({
   routing,
   resize,
+  audio,
   app,
   videoTracks,
+  playlists,
+  effects,
+  videoRecord,
+  query,
+  keyboard,
+  mouse,
   browser: createResponsiveStateReducer({
     mobile: 360,
     phablet: 540,

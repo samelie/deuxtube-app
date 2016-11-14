@@ -1,32 +1,18 @@
 import {
-  APP_MEDIA_AUDIO,
   APP_EXPORT_URL,
+  APP_RECORD,
+  APP_SAVE,
 } from '../constants/action-types';
 
-import { Record } from 'immutable';
+import { Record, Map } from 'immutable';
 
-/**
- * Record is like a class, but immutable and with default values.
- * https://facebook.github.io/immutable-js/docs/#/Record
- */
-/*const InitialState = Record({
-  media: Record({
-    audio: Record({
 
-    })
-  })
-});*/
-
-const InitialState = Record({
-  finalSave:{},
-  media: {
-    audio: {
-
-    }
-  }
-});
-
-const initialState = new InitialState;
+const initialState = new Map()
+  .set('saving', false)
+  .set('recording', false)
+  .set('saved', false)
+  .set('saveResults', false)
+  .set('media', null)
 
 /**
  * [projects description]
@@ -36,17 +22,18 @@ const initialState = new InitialState;
  */
 export default function app(state = initialState, action) {
   switch (action.type) {
-    case APP_MEDIA_AUDIO:
-      {
-        let _media = state.get('media')
-        _media.audio = Object.assign({}, _media.audio, action.payload)
-        let _mergedMedia = Object.assign({}, state.get('media').audio, action.payload)
-        state.set('media', _media)
-        return state
-      }
     case APP_EXPORT_URL:
       {
-        return state.set('finalSave', action.payload)
+        return state.set('finalSave', action.payload).set('saved', true)
+      }
+    case APP_RECORD:
+      {
+        return state.set('recording', action.payload)
+      }
+    case APP_SAVE:
+      {
+        return state.set('saving', action.payload)
+        .set('recording', false)
       }
     default:
       {

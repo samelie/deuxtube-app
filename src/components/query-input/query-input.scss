@@ -1,6 +1,10 @@
 .query-input{
-  background:    url('/assets/images/background_make.jpg');
+    background:    url('/assets/images/background_make.jpg');
     background-size:     cover;
     background-repeat:   no-repeat;
     background-position: center center;
+    max-width: 100%;
+    &:placeholder{
+      color: black;
+    }
 }

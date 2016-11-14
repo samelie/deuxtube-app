@@ -14,7 +14,15 @@ export const SVG_DIR = `${REMOTE_ASSETS_DIR}svg/`;
 export const FILTER_ONLY_MP3 = true
 export const TIME_ON_LOCATION_COVER = 10000
 
+//deux-tube
 export const VIDEO_WIDTH = 640
 export const VIDEO_HEIGHT = 360
 export const VERBOSE = false
+export const MAX_RESOLUTION = '240p'
+export const RECORDING_FRAME_FMT = 'image/jpeg'
+export const RECORDING_FRAME_Q = 0.8
+export const RECORDING_FRAME_EXT = '.webp'
+
+export const AUDIO_CHUNKS_TO_LOAD = 999
+
 
