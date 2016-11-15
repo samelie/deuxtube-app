@@ -36,6 +36,9 @@ export default function query(state = initialState, action) {
         })
         let items = rawResults.items.map(item => {
           item.videoId = getIdFromItem(item)
+          item.snippet.resourceId = item.snippet.resourceId || {
+            videoId:item.videoId
+          }
           return item
         })
         return state.set('results', {

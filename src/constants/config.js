@@ -25,6 +25,6 @@ export const RECORDING_FRAME_FMT = 'image/jpeg'
 export const RECORDING_FRAME_Q = 0.8
 export const RECORDING_FRAME_EXT = '.webp'
 
-export const AUDIO_CHUNKS_TO_LOAD = 3
+export const AUDIO_CHUNKS_TO_LOAD = 999
 
 

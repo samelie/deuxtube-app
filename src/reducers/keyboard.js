@@ -29,6 +29,7 @@ export default function keyboard(state = initialState, action) {
         selectionMap = Object.assign({}, selectionMap)
         let _val = !!selectionMap[keyCodeStr]
         selectionMap[keyCodeStr] = !_val
+
         //keycode
         /*let current = state.get('tabIndex')
         let _nextTab = (keyCode === Keys.Q) ? current + 1 : current

@@ -18,6 +18,11 @@ let _o = {
     type: 'float',
     value: 0.7
   },
+  uKeyVideoIndex: {
+    type: 'int',
+    value: 0
+  },
+
   uColorEffectsOne: {
     type: 'float',
     value: 1.
@@ -42,9 +47,37 @@ let _o = {
     type: 'float',
     value: 0.0
   },
-  uKeyVideoIndex: {
-    type: 'int',
-    value: 0
+  uBrightnessOne: {
+    type: 'float',
+    value: 0.01
+  },
+  uSaturationOne: {
+    type: 'float',
+    value: 1.01
+  },
+  uContrastOne: {
+    type: 'float',
+    value: 0.01
+  },
+  uHueOne: {
+    type: 'float',
+    value: 0.0
+  },
+  uBrightnessTwo: {
+    type: 'float',
+    value: 0.01
+  },
+  uSaturationTwo: {
+    type: 'float',
+    value: 1.01
+  },
+  uContrastTwo: {
+    type: 'float',
+    value: 0.01
+  },
+  uHueTwo: {
+    type: 'float',
+    value: 0.0
   },
 
   uBlendMode: {
@@ -69,6 +102,10 @@ export default class DeuxEffects {
     this.targetEl = targetEl
     this.options = options
     this._sources = []
+
+    this._sharedEffects = [
+      "uBrightness", "uSaturation", "uContrast", "uHue",
+    ]
   }
 
   addSource(el) {
@@ -131,6 +168,10 @@ export default class DeuxEffects {
     return this.videoEffects.getDataURL(enc, q)
   }
 
+
+  get sharedEffects(){
+    return this._sharedEffects
+  }
 
 
 }

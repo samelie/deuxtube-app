@@ -9,6 +9,7 @@ import { update } from '../../actions/video_record';
 
 import Gui from './gui'
 import Effects from './effects';
+import Utils from '../../utils/utils';
 import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter'
 import EaseNumbers from '../../utils/easeNumbers'
@@ -20,6 +21,11 @@ import {
   RECORDING_FRAME_FMT,
   RECORDING_FRAME_Q
 } from '../../constants/config';
+
+const TRACK_EFFECT_SUFFIX = [
+  'One',
+  'Two',
+]
 
 class DeuxTube extends Component {
 
@@ -44,7 +50,7 @@ class DeuxTube extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    let { app, effects } = nextProps
+    let { app, effects, videoState } = nextProps
     this.setState({
       recording: app.get('recording'),
       saving: app.get('saving')
@@ -52,10 +58,11 @@ class DeuxTube extends Component {
     if (app.get('saving')) {
       this._effects.pause()
     }
-    this._updateEffectsUniforms(effects)
+    this._updateEffectsUniforms(effects, videoState)
   }
 
-  _updateEffectsUniforms(nextEffects) {
+  _updateEffectsUniforms(nextEffects, videoState) {
+    const { keyboard } = this.props
     let updatedEffect = nextEffects.get('updatedEffect')
       //ugly
     let _value = updatedEffect.value
@@ -65,12 +72,29 @@ class DeuxTube extends Component {
     }
     //is an effect uniform
     if (updatedEffect.isUniform) {
-      this._effects.changedValue(
-        updatedEffect.key,
-        _value
-      )
+
+      //color
+      if (this._effects.sharedEffects
+        .indexOf(updatedEffect.key) > -1) {
+        //loop selecred
+        videoState.get('selectionIndexs')
+          .map(index => {
+            let _suffix = TRACK_EFFECT_SUFFIX[index]
+            this._effects.changedValue(
+              `${updatedEffect.key}${_suffix}`,
+              _value
+            )
+          })
+      } else {
+        this._effects.changedValue(
+          updatedEffect.key,
+          _value
+        )
+      }
     }
   }
+
+
 
   _setEffectUniforms() {
     let { effects } = this.props
@@ -174,13 +198,17 @@ export default connect(({
   effects,
   browser,
   videoRecord,
-  videoTracks
+  videoTracks,
+  videoState,
+  keyboard,
 }) => ({
   app,
   effects,
   videoRecord,
   browser,
   videoTracks,
+  videoState,
+  keyboard,
 }), {
   update
 })(DeuxTube);

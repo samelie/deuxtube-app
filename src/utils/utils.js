@@ -1,3 +1,5 @@
+import { NUMBERS } from './keys';
+
 if (!String.prototype.includes) {
   String.prototype.includes = function(search, start) {
     'use strict';
@@ -71,7 +73,8 @@ const P = {
     // set el css
     $el.css('transform', 'scale3d(' + scale + ', ' + scale + ', 1) translate3d(' + x + 'px,' + y + 'px,0)');
     $el.css('transform-origin', '0% 0% 0px');
-  }
+  },
+
 
 
 }

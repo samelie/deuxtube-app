@@ -44,8 +44,8 @@ class ControlsEffects extends Component {
    tabIndex: 0,
    effectIndex: 0,
 
-   activeEffectGroupIndex:0,
-   groupEffectIndex:0,
+   /*activeEffectGroupIndex:0,
+   groupEffectIndex:0,*/
   }
  }
 
