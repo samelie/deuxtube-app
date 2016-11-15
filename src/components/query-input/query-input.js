@@ -71,12 +71,15 @@ class QueryInput extends Component {
     if (_playlistId) {
       this._makePlaylistQuery(_playlistId)
         .then(results => {
-          onQueryResponse(results)
+          //goes to playliat
+          setQuery({id, results})
+          //onQueryResponse(results)
         }).finally()
     } else if (_videoId) {
       this._makeVideoQuery(_videoId)
         .then(results => {
-          onQueryResponse(results)
+          setQuery({id, results})
+          //onQueryResponse(results)
         }).finally()
     }else{
       this._search(value)

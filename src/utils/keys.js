@@ -1,4 +1,6 @@
 const KEYS = {
+  LEFT:37,
+  RIGHT:39,
   SPACE:32,
   SHIFT:16,
   Q:81,

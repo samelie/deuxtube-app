@@ -6,6 +6,8 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 import { mediaAudioChanged } from '../../actions/app';
 import { createPlaylist, setPlaylist } from '../../actions/playlists';
+import { playbarUpdate } from '../../actions/playbar';
+import { videoSelect } from '../../actions/video_state';
 
 import Video from './video'
 import Keys from '../../utils/keys';
@@ -17,240 +19,283 @@ import QueryInput from '../query-input/query-input'
 import Input from '../../components/input/input'
 import VideoPlaylist from '../video-playlist/video-playlist'
 
+import {
+ PLAYBAR_UPDATE,
+ PLAYBAR_SEEK,
+ PLAYBAR_SET_CURRENT_TIME,
+} from '../../constants/action-types';
+
 const smallImageUrl = (id) => (`https://img.youtube.com/vi/${id}/3.jpg`, )
 
 class AudioTrack extends Component {
 
-  static contextTypes = {
-    videoId: React.PropTypes.string
-  }
+ static contextTypes = {
+  videoId: React.PropTypes.string
+ }
 
-  constructor(props) {
-      super(props)
-      const { addAudio } = this.props
-      this.sliderData = [{
-        key: 'seek',
-        title: 'Seek',
-        value: 0,
-        slider: {
-          min: 0,
-          max: 1,
-          step: 0.01,
-          onChange: (val) => {
-            this._updateSeekState({
-              paused: true,
-              sliderValue: val
-            })
-          },
-          onAfterChange: (val) => {
-            this._updateSeekState({
-              paused: false,
-            })
-            this._seekCurrentVideo(val)
-          }
-        },
-      }]
-      this.state = {
-        totalDuration: 0,
-        duration: 0,
-        seek: {
-          sliderValue: this.sliderData[0].value
-        },
-        currentVideo: {
-          title: "",
-          videoId: "",
-          progress: 0
-        },
-        mediaSourceState: "",
-        playlist: []
-      }
-
-      this._playlistApi = {
-        queueItemClicked: this._queueItemClicked.bind(this),
-        moveVideoToFrontQueue: this._moveVideoToFrontQueue.bind(this),
-        removeVideoFromQueue: this._removeVideoFromQueue.bind(this),
-      }
-    }
-    //********
-    //SEEK
-    //********
-
-  _updateSeekState(obj) {
-    let _v = Object.assign({}, this.state.seek, obj)
-    this.setState({
-      seek: _v
-    })
-  }
-
-  _seekCurrentVideo(val) {
-    console.log(val);
-    this.controller.seek(val)
-  }
-
-
-  _onVideoProgress(p) {
-    if (!this.state.seek.paused) {
-      this._updateSeekState({ sliderValue: p })
-    }
-  }
-
-  componentDidMount() {
-    const { el, config, createPlaylist, setPlaylist } = this.props;
-    const { id } = config
-    this._player = new Video({ el: el, socket: Socket.socket })
-    this._player.addSource(config)
-    this._player.start()
-
-    /*this._player.on('VO_PLAYBACK_PROGRESS', (p) => {
-      this._onVideoProgress(p)
-    })*/
-
-    this._player.on('MEDIASOURCE_STATE', (state) => {
-      this.setState({ 'mediaSourceState': state })
-    })
-
-    this._player.on('PLAYLIST', (items) => {
-      //we dont show the currrent video here??
-      setPlaylist({ key: id, value: [...items] })
-        //this.setState({ 'playlist': [...items] })
-    })
-
-    this._player.on('VO_ADDED', (vo, msVo) => {
-      console.log(msVo);
-      console.log(vo);
-      let _current = this.state.currentVideo
-      let _lastref = vo.currentRefIndexs[vo.currentRefIndexs.length - 1]
-      this.setState({
-        currentVideo: Object.assign({},
-          _current, {
-            progress: `${_lastref}/${vo.referencesLength}`
-          }
-        )
+ constructor(props) {
+   super(props)
+   const { addAudio } = this.props
+   this.sliderData = [{
+    key: 'seek',
+    title: 'Seek',
+    value: 0,
+    slider: {
+     min: 0,
+     max: 1,
+     step: 0.01,
+     onChange: (val) => {
+      this._updateSeekState({
+       paused: true,
+       sliderValue: val
       })
-      this._onVideoProgress(_lastref / vo.referencesLength)
+     },
+     onAfterChange: (val) => {
+      this._updateSeekState({
+       paused: false,
+      })
+      this._seekCurrentVideo(val)
+     }
+    },
+   }]
+   this.state = {
+    totalDuration: 0,
+    duration: 0,
+    seek: {
+     sliderValue: this.sliderData[0].value
+    },
+    currentVideo: {
+     title: "",
+     videoId: "",
+     progress: 0
+    },
+    isSelected: false,
+    playbarSeek: 0,
+    playbarCurrentTime: 0,
+    mediaSourceState: "",
+    playlist: []
+   }
+
+   this._playlistApi = {
+    queueItemClicked: this._queueItemClicked.bind(this),
+    moveVideoToFrontQueue: this._moveVideoToFrontQueue.bind(this),
+    removeVideoFromQueue: this._removeVideoFromQueue.bind(this),
+   }
+  }
+  //********
+  //SEEK
+  //********
+
+ _updateSeekState(obj) {
+  let _v = Object.assign({}, this.state.seek, obj)
+  this.setState({
+   seek: _v
+  })
+ }
+
+ _seekCurrentVideo(val) {
+  console.log(val);
+  this.controller.seek(val)
+ }
+
+
+ _onVideoProgress(p) {
+  if (!this.state.seek.paused) {
+   this._updateSeekState({ sliderValue: p })
+  }
+ }
+
+ componentDidMount() {
+  const { el, config, createPlaylist, setPlaylist, playbarUpdate } = this.props;
+  const { id } = config
+  this._player = new Video({ el: el, socket: Socket.socket })
+  this._player.addSource(config)
+  this._player.start()
+
+  /*this._player.on('VO_PLAYBACK_PROGRESS', (p) => {
+    this._onVideoProgress(p)
+  })*/
+
+  this._player.on('MEDIASOURCE_STATE', (state) => {
+   this.setState({ 'mediaSourceState': state })
+  })
+
+  this._player.on('PLAYLIST', (items) => {
+   //we dont show the currrent video here??
+   setPlaylist({ key: id, value: [...items] })
+    //this.setState({ 'playlist': [...items] })
+  })
+
+  this._player.on('VO_ADDED', (vo, msVo) => {
+   let {
+    currentTime,
+    sourceBufferStart,
+    sourceBufferEnd
+   } = this.mediasource
+   let _current = this.state.currentVideo
+   let _lastref = vo.currentRefIndexs[vo.currentRefIndexs.length - 1]
+   playbarUpdate({
+    currentTime,
+    sourceBufferStart,
+    sourceBufferEnd,
+   })
+   this.setState({
+    currentVideo: Object.assign({},
+     _current, {
+      progress: `${_lastref}/${vo.referencesLength}`
+     }
+    )
+   })
+   this._onVideoProgress(_lastref / vo.referencesLength)
+  })
+
+  this._player.on('VIDEO_FINISHED', (item) => {
+   this._onVideoProgress(0)
+   if (item) {
+    this.setState({
+     currentVideo: {
+      title: item.snippet.title,
+      videoId: item.snippet.resourceId.videoId
+     }
     })
+   }
+  })
 
-    this._player.on('VIDEO_FINISHED', (item) => {
-      this._onVideoProgress(0)
-      if (item) {
-        this.setState({
-          currentVideo: {
-            title: item.snippet.title,
-            videoId: item.snippet.resourceId.videoId
-          }
-        })
-      }
-    })
+  Emitter.emit(`videotrack:el`, this._player.vjPlayer.mediaSources[0][0].el)
 
-    Emitter.emit(`videotrack:el`, this._player.vjPlayer.mediaSources[0][0].el)
+  Emitter.on('controls:record:save', () => {
+   this.controller.pause()
+  })
 
-    Emitter.on('controls:record:save', () => {
-      this.controller.pause()
-    })
+  createPlaylist(id)
+ }
 
-    createPlaylist(id)
-  }
+ componentWillReceiveProps(nextProps) {
+  let { id, app, keyboard, playbar } = this.props
+  let _playlistNow = nextProps.playlists.get(id)
 
-  componentWillReceiveProps(nextProps) {
-    let { id,app, keyboard } = this.props
-    let _playlistNow = nextProps.playlists.get(id)
-
-    if (_playlistNow) {
-      let action = _playlistNow.get('playlistAction')
-        //fires twice?
-      if (action) {
-        let { type, videoId, item } = action
-        switch (action.type) {
-          case 'move':
-            this._moveVideoToFrontQueue(videoId, item)
-            break;
-          case 'delete':
-            this._removeVideoFromQueue(videoId)
-            break;
-        }
-      }
-    }
-    if (app.get('saving')) {
-      this.controller.pause()
-    }
-
-    this._processKeyboard(keyboard)
-  }
-
-  /*
-   loop over the numbers and match the video index
-    with the state of that key
-  */
-  _processKeyboard(keyboard) {
-    let { index } = this.props
-    let selectedVideoTracks = NUMBERS.filter((num, numIndex) => {
-      let _keyState = keyboard.get('selectionMap')[num]
-      if (index === numIndex && _keyState) {
-        return true
-      }
-      return false
-    })
-    let _isSelected = !!selectedVideoTracks[index]
-    this._setSelectedClass(_isSelected)
-  }
-
-  _setSelectedClass(isSelected) {
-    let _clazz = "is-selected"
-    if (isSelected) {
-      this.refs.videoTrackWrapper.classList.add(_clazz)
-    } else {
-      this.refs.videoTrackWrapper.classList.remove(_clazz)
-    }
-  }
-
-  _removeKeys() {
-
-  }
-
-  get controller() {
-    return this._player.vjPlayer.controllers[0]
-  }
-
-
-  onInputQuery(results) {
-    this.controller.addPlaylistItems(results)
-  }
-
-  //***********
-  //UI API
-  //***********
-
-  _queueItemClicked(videoId) {
-    if (this._shiftDown) {
+  if (_playlistNow) {
+   let action = _playlistNow.get('playlistAction')
+    //fires twice?
+   if (action) {
+    let { type, videoId, item } = action
+    switch (action.type) {
+     case 'move':
+      this._moveVideoToFrontQueue(videoId, item)
+      break;
+     case 'delete':
       this._removeVideoFromQueue(videoId)
-    } else {
-      this._moveVideoToFrontQueue(videoId)
+      break;
+    }
+   }
+  }
+  if (app.get('saving')) {
+   this.controller.pause()
+  }
+
+  this._processKeyboard(keyboard)
+  this._processPlaybar(playbar)
+ }
+
+ /*
+  loop over the numbers and match the video index
+   with the state of that key
+ */
+ _processKeyboard(keyboard) {
+  let { index, videoSelect } = this.props
+  let selectedVideoTracks = NUMBERS.filter((num, numIndex) => {
+   let _keyState = keyboard.get('selectionMap')[num]
+   if (index === numIndex && _keyState) {
+    return true
+   }
+   return false
+  })
+  let _isSelected = !!selectedVideoTracks.length
+  if (this.state.isSelected !== _isSelected) {
+   this.setState({ isSelected: _isSelected })
+   this._setSelectedClass(_isSelected)
+   videoSelect({ index, isSelected: _isSelected })
+  }
+ }
+
+ _setSelectedClass(isSelected) {
+  let _clazz = "is-selected"
+  if (isSelected) {
+   this.refs.videoTrackWrapper.classList.add(_clazz)
+  } else {
+   this.refs.videoTrackWrapper.classList.remove(_clazz)
+  }
+ }
+
+ _processPlaybar(playbar) {
+  if (!this.state.isSelected) {
+   return
+  }
+  switch (playbar.get('currentAction')) {
+   case PLAYBAR_SET_CURRENT_TIME:
+    {
+     this.mediasource.currentTime = playbar.get('seekCurrentTime')
+    }
+   case PLAYBAR_SEEK:
+    {
+     this.mediasource.seek(playbar.get('seek'))
+     this.mediasource.play()
     }
   }
 
-  _removeVideoFromQueue(videoId) {
-    this.controller.removeIdFromPlaylist(videoId)
+ }
+
+ _removeKeys() {
+
+ }
+
+ get controller() {
+  return this._player.vjPlayer.controllers[0]
+ }
+
+ get mediasource() {
+  return this._player.vjPlayer.mediaSources[0][0]
+ }
+
+ onInputQuery(results) {
+  this.controller.addPlaylistItems(results)
+ }
+
+ //***********
+ //UI API
+ //***********
+
+ _queueItemClicked(videoId) {
+  if (this._shiftDown) {
+   this._removeVideoFromQueue(videoId)
+  } else {
+   this._moveVideoToFrontQueue(videoId)
   }
+ }
 
-  _moveVideoToFrontQueue(videoId) {
-    this.controller.moveToFrontPlaylist(videoId)
-  }
+ _removeVideoFromQueue(videoId) {
+  this.controller.removeIdFromPlaylist(videoId)
+ }
+
+ _moveVideoToFrontQueue(videoId, item) {
+  this.controller.moveToFrontPlaylist(videoId, item)
+ }
 
 
-  render() {
-    const { browser, config } = this.props;
-    const { id } = config
+ render() {
+  const { browser, config } = this.props;
+  const { id } = config
 
-    let _sliders = this.sliderData.map(slider => {
-      return <MediaControls ref = { slider.key }
+  let _sliders = this.sliderData.map(slider => {
+   return <MediaControls ref = { slider.key }
       key = { slider.key }
       {...slider }
       {...this.state[slider.key] }
       />
-    })
+  })
 
-    return (
-      <div ref="videoTrack" className="video-track">
+  return (
+   <div ref="videoTrack" className="video-track">
         <div className="video-track__playing">
           <div>{this.state.currentVideo.title}</div>
           <div ref="videoTrackWrapper" className="playing__wrapper">
@@ -270,8 +315,8 @@ class AudioTrack extends Component {
         />
 
       </div>
-    );
-  }
+  );
+ }
 }
 /*
 <VideoPlaylist
@@ -280,12 +325,15 @@ class AudioTrack extends Component {
           playlist={this.state.playlist}
          />
 */
-export default connect(({ app,browser, playlists, keyboard }) => ({
-  app,
-  browser,
-  playlists,
-  keyboard,
+export default connect(({ app, browser, playlists, playbar, keyboard }) => ({
+ app,
+ browser,
+ playlists,
+ keyboard,
+ playbar,
 }), {
-  createPlaylist,
-  setPlaylist,
+ createPlaylist,
+ setPlaylist,
+ playbarUpdate,
+ videoSelect,
 })(AudioTrack);

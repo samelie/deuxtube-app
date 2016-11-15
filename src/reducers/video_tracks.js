@@ -46,7 +46,7 @@ const InitialState = Record({
       'PLqi-HJej8buehtiukZnuRoL9yiRJfEBRQ'
     ],
     forcePlaylistUpdate: true
-  }, {
+  }/*, {
     id: 'videoTwo',
     noAutoStart: false,
     videoWidth: VIDEO_WIDTH,
@@ -80,7 +80,7 @@ const InitialState = Record({
     ],
     forcePlaylistUpdate: true
 
-  }]
+  }*/]
 });
 
 const initialState = new InitialState;

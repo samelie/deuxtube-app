@@ -4,7 +4,11 @@ import { Link } from 'react-router';
 import Q from 'bluebird';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { setPlaylist, movePlaylistItem, deletePlaylistItem } from '../../actions/playlists';
+import {
+  setPlaylist,
+  movePlaylistItem,
+  deletePlaylistItem
+} from '../../actions/playlists';
 
 import PlaylistItem from './playlistItem';
 import Emitter from '../../utils/emitter';

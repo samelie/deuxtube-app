@@ -43,6 +43,9 @@ class ControlsEffects extends Component {
    activeEffectIndex: NaN,
    tabIndex: 0,
    effectIndex: 0,
+
+   activeEffectGroupIndex:0,
+   groupEffectIndex:0,
   }
  }
 

@@ -9,6 +9,8 @@ import playlists from './playlists';
 import keyboard from './keyboard';
 import effects from './effects';
 import query from './query';
+import playbar from './playbar';
+import videoState from './video_state';
 import audio from './audio';
 import mouse from './mouse';
 import videoRecord from './video_record';
@@ -25,8 +27,10 @@ export default combineReducers({
   audio,
   app,
   videoTracks,
+  playbar,
   playlists,
   effects,
+  videoState,
   videoRecord,
   query,
   keyboard,

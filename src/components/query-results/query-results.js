@@ -28,11 +28,9 @@ class QueryResults extends Component {
   _queueItemClicked(videoId) {
     const { query, movePlaylistItem, id } = this.props;
     let item = _.find(query.get('results').items, {
-      id: {
-        videoId,
-        videoId
-      }
+      videoId:videoId
     })
+    console.log(item);
     movePlaylistItem({
       key: query.get('results').id,
       item: item,
