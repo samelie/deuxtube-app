@@ -1,8 +1,16 @@
 import {
+  APP_LOGGED_IN,
   APP_EXPORT_URL,
   APP_RECORD,
   APP_SAVE,
 } from '../constants/action-types';
+
+export function loggedIn(payload = {}) {
+  return {
+    type: APP_LOGGED_IN,
+    payload: payload
+  };
+}
 
 export function exportUrl(payload = {}) {
   return {

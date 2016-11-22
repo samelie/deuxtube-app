@@ -1,4 +1,5 @@
 import {
+  APP_LOGGED_IN,
   APP_EXPORT_URL,
   APP_RECORD,
   APP_SAVE,
@@ -8,6 +9,7 @@ import { Record, Map } from 'immutable';
 
 
 const initialState = new Map()
+  .set('loggedIn', false)
   .set('saving', false)
   .set('recording', false)
   .set('saved', false)
@@ -22,6 +24,10 @@ const initialState = new Map()
  */
 export default function app(state = initialState, action) {
   switch (action.type) {
+    case APP_LOGGED_IN:
+      {
+        return state.set('loggedIn', action.payload)
+      }
     case APP_EXPORT_URL:
       {
         return state.set('finalSave', action.payload).set('saved', true)
@@ -33,7 +39,7 @@ export default function app(state = initialState, action) {
     case APP_SAVE:
       {
         return state.set('saving', action.payload)
-        .set('recording', false)
+          .set('recording', false)
       }
     default:
       {

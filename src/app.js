@@ -54,6 +54,7 @@ window.addEventListener("orientationchange", () => {
 });
 
 window.addEventListener('keydown', (e) => {
+  //lsiten
   store.dispatch({
     type: KEYBOARD_DOWN,
     payload: e.keyCode

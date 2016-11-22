@@ -3,7 +3,14 @@ import {
  EFFECT_CHANGED,
  EFFECT_SELECTED,
  EFFECTS_UPDATE_SELECTED,
+
+ KEYBOARD_DOWN,
 } from '../constants/action-types';
+
+import Keys from '../utils/keys';
+import {
+ CONTROLS_BAR_INCRE,
+} from '../constants/config';
 
 import { Record, Map } from 'immutable';
 
@@ -12,13 +19,13 @@ const initialState = new Map()
  .set('videoTrackIds', null)
  .set('updatedEffect', {})
  .set('selectedEffect', null)
- .set('totalBlendModes',24)
+ .set('totalBlendModes', 24)
  .set('mix', {
   'uMixRatio': {
    key: 'uMixRatio',
    title: 'uMixRatio',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'float',
    value: 0,
@@ -33,7 +40,7 @@ const initialState = new Map()
    key: 'uThreshold',
    title: 'uThreshold',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'float',
    value: 0,
@@ -48,7 +55,7 @@ const initialState = new Map()
    key: 'uKeyVideoIndex',
    title: 'uKeyVideoIndex',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'int',
    value: 0,
@@ -65,7 +72,7 @@ const initialState = new Map()
    key: 'uBlendOpacity',
    title: 'uBlendOpacity',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'float',
    value: 1.,
@@ -80,7 +87,7 @@ const initialState = new Map()
    key: 'uBlendMix',
    title: 'uBlendMix',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'float',
    value: 1.,
@@ -95,7 +102,7 @@ const initialState = new Map()
    key: 'uBlendMode',
    title: 'uBlendMode',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'int',
    value: 0,
@@ -239,7 +246,7 @@ const initialState = new Map()
    key: 'uColorEffectsOne',
    title: 'uColorEffectsOne',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'float',
    value: 1,
@@ -254,7 +261,7 @@ const initialState = new Map()
    key: 'uColorEffectsTwo',
    title: 'uColorEffectsTwo',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'float',
    value: 1,
@@ -269,7 +276,7 @@ const initialState = new Map()
    key: 'uSaturation',
    title: 'uSaturation',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'float',
    value: 0,
@@ -284,7 +291,7 @@ const initialState = new Map()
    key: 'uBrightness',
    title: 'uBrightness',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'float',
    value: 0,
@@ -299,7 +306,7 @@ const initialState = new Map()
    key: 'uContrast',
    title: 'uContrast',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'float',
    value: 0,
@@ -314,7 +321,7 @@ const initialState = new Map()
    key: 'uHue',
    title: 'uHue',
    selected: false,
-   isUniform:true,
+   isUniform: true,
    vertical: true,
    type: 'float',
    value: 0,
@@ -363,6 +370,26 @@ export default function effects(state = initialState, action) {
       .set('selectedEffect', Object.assign({}, _group[key]))
     }
     return _newState
+   }
+  case KEYBOARD_DOWN:
+   {
+    let _current = state.get('selectedEffect')
+    if (!_current) {
+     return state
+    }
+    //key
+    switch (action.payload) {
+     case Keys.UP:
+      _current.value += CONTROLS_BAR_INCRE
+      _current.value = Math.min(_current.value, 1)
+      break;
+     case Keys.DOWN:
+      _current.value -= CONTROLS_BAR_INCRE
+      _current.value = Math.max(_current.value, 0)
+      break;
+    }
+    return state.set('selectedEffect', Object.assign({}, _current))
+     .set('updatedEffect', Object.assign({}, _current))
    }
   default:
    {

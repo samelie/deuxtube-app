@@ -100,8 +100,8 @@
   position: relative;
   overflow: scroll;
   width: 100%;
-  height: 33.3%;
-  margin-bottom: 4px;
+  height: calc(33.3% - 14px);
+  padding-bottom: 14px;
 }
 .make--effects {
     position: relative;

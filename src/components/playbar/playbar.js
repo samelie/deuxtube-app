@@ -104,9 +104,9 @@ class Playbar extends Component {
   const { playbarSeek, videoState } = this.props;
 
   if (!this._canProcess()) {
-   console.warn('No video track selected');
    return
   }
+
   let _changed = false
   let _newValue = 0
   let _rightDown = keyboard.get(Keys.RIGHT.toString())

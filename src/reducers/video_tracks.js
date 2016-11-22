@@ -42,8 +42,8 @@ const InitialState = Record({
       //'PLRQ2jIXShfkZcTp4rsP8uJotv6fOZas_v',
       //'PLuTh1a1eg5vbCa-G0APvdzFqFosBpgmqi',
       //'PLS_gQd8UB-hIynOqgxmApPU6nCRjIBd2y',
-      'PLuTh1a1eg5vbZTFzVvH3_lpTCgPlfzaoV',
-      'PLqi-HJej8buehtiukZnuRoL9yiRJfEBRQ'
+      //'PLuTh1a1eg5vbZTFzVvH3_lpTCgPlfzaoV',
+      //'PLqi-HJej8buehtiukZnuRoL9yiRJfEBRQ'
     ],
     forcePlaylistUpdate: true
   }, {
@@ -64,7 +64,7 @@ const InitialState = Record({
       chooseBest: false,
     },
     playlists: [
-      'PLZRcgvIPIUuVnYcQOY4WpQFzGjIKYpnGS',
+      'PLZRcgvIPIUuXiXOSVc3QU-Qi96w_63Pz4',
       //'PLZRcgvIPIUuVGLl0qf6-NXxIk2L4GdxaO'
       //'PLRQ2jIXShfkZcTp4rsP8uJotv6fOZas_v',
       //'PLZRcgvIPIUuW22caHjgZZAvTnH3QhvPNY'

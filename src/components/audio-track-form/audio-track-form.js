@@ -1,4 +1,4 @@
-import './landing-page.scss';
+//import './landing-page.scss';
 
 import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
@@ -11,8 +11,11 @@ import { fetchJson } from '../../utils/fetch';
 
 import ReactHtmlParser from 'react-html-parser';
 
-import AudioTrackForm from '../../components/audio-track-form/audio-track-form';
-import LoginForm from '../../components/login-form/login-form';
+import Player from '../../components/player/player';
+import Query from '../../components/query/query';
+import Controls from '../../components/controls/controls';
+import ActionButton from '../../components/ui/action-button'
+import Input from '../../components/input/input'
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -22,7 +25,7 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-class LandingPage extends Component {
+class AudioTrackForm extends Component {
 
   static propTypes = {
     browser: PropTypes.object.isRequired
@@ -32,7 +35,6 @@ class LandingPage extends Component {
     super(props)
     this.state = {
       ready: false,
-      loggedIn:false,
       bgImageStyle: {
         //background: `url(${process.env.REMOTE_ASSETS_DIR}images/dog.jpg) no-repeat center center fixed`,
       }
@@ -41,13 +43,6 @@ class LandingPage extends Component {
 
   componentDidMount() {
     this._ytre = /(youtu\.be\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v)\/))([^\?&"'>]+)/
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const {app} = nextProps
-    if(app.get('loggedIn')){
-      this.setState({loggedIn:true})
-    }
   }
 
   _parseAndNavigate(url) {
@@ -70,26 +65,25 @@ class LandingPage extends Component {
     this._parseAndNavigate(v)
   }
 
-  _renderTrackForm(){
-    if(this.state.loggedIn){
-      return (<AudioTrackForm/>)
-    }
-    return <div></div>
-  }
-
   render() {
     const { browser } = this.props;
     return (
-      <div className="o-page landing">
-        <LoginForm />
-        {this._renderTrackForm()}
+      <div className="audio-track-form">
+      <h1>MAKE MUSIC VIDEOS</h1>
+      <Input
+        onChange={this.onInputChanged.bind(this)}
+        placeholder={"paste youtube url here"}
+      />
+      <ActionButton
+          text={'GO'}
+          onClick={this.onStart.bind(this)}
+        />
       </div>
     );
   }
 }
 
 
-export default connect(({ browser,app }) => ({
+export default connect(({ browser }) => ({
   browser,
-  app,
-}), mapDispatchToProps)(LandingPage);
+}), mapDispatchToProps)(AudioTrackForm);

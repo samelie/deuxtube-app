@@ -8,6 +8,12 @@ import {
   effectChanged,
 } from '../../actions/effects';
 
+import Keys from '../../utils/keys';
+
+import {
+  CONTROLS_BAR_INCRE,
+} from '../../constants/config';
+
 class ControlsSlider extends Component {
 
   static propTypes = {};
@@ -15,6 +21,7 @@ class ControlsSlider extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      selected: false,
       active: false,
       value: 0
     }
@@ -22,27 +29,41 @@ class ControlsSlider extends Component {
 
   componentDidMount() {
     const { props } = this.props
-    this.setState({ value: props.defaultValue })
+    this.setState({ value: props.slider.defaultValue })
   }
 
   componentWillReceiveProps(nextProps) {
-    const { effects } = nextProps
+    const { effects, keyboard } = nextProps
     const { props, effectChanged } = this.props
-    const { key, group } = props
+    const { key, group, onChange } = props
     let { selected } = effects.get(group)[key]
+    let _shiftDown = keyboard.get(Keys.SHIFT.toString())
     if (selected) {
       this.slider.classList.add('is-selected')
     } else {
       this.slider.classList.remove('is-selected')
     }
 
+    if (this.state.selected !== selected) {
+      this.setState({
+        selected: selected
+      })
+    }
+
+    //only when the shift is down
+    let _upDown = keyboard.get(Keys.UP.toString())
+    let _downDown = keyboard.get(Keys.DOWN.toString())
+    let _keyPressed = _upDown || _downDown
     let _selected = effects.get('selectedEffect')
     if (selected && !this.state.active &&
       key === _selected.key
     ) {
-      this.setState({
-        value: _selected.value * props.slider.max
-      })
+      //key pressed is set from app.js > effects
+      if(_shiftDown || _keyPressed){
+        this.setState({
+          value: _selected.value * props.slider.max
+        })
+      }
     }
   }
 
@@ -58,7 +79,7 @@ class ControlsSlider extends Component {
   render() {
     const { props, sliderValue, vertical } = this.props
     let _clasz = (vertical ? "is-vertical" : "is-horizontal")
-    return ( < Rcslider ref = { this.sliderRef }
+    return ( <Rcslider ref = { this.sliderRef }
       className = { `effects-slider ${_clasz}` }
       onChange = {
         (val) => {
@@ -84,8 +105,9 @@ class ControlsSlider extends Component {
   }
 }
 
-export default connect(({ effects }) => ({
+export default connect(({ effects, keyboard }) => ({
   effects,
+  keyboard,
 }), {
   effectChanged
 })(ControlsSlider);

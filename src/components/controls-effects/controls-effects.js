@@ -44,8 +44,8 @@ class ControlsEffects extends Component {
    tabIndex: 0,
    effectIndex: 0,
 
-   /*activeEffectGroupIndex:0,
-   groupEffectIndex:0,*/
+   activeEffectGroupIndex: NaN,
+   groupEffectIndex: NaN,
   }
  }
 
@@ -125,6 +125,7 @@ class ControlsEffects extends Component {
     key: _effectKey
    })
    let position = mouse.get('position')
+
    console.log({
     group: groupId,
     key: _effectKey,
@@ -167,8 +168,8 @@ class ControlsEffects extends Component {
    this.setState({
     groupEffectIndex: _effectTabIndexWrapped
    })
-  } else {
-   /*group effects*/
+  } else if (!isNaN(this.state.groupEffectIndex)) {
+   /*group effects, set new effect with tabs*/
    let { groupEffects, groupId } = this._groups[this.state.groupEffectIndex]
    _effectTabIndexWrapped = tabIndex % groupEffects.length
    this._updateEffectSelection(
@@ -178,14 +179,22 @@ class ControlsEffects extends Component {
    )
    this.setState({
     effectIndex: _effectTabIndexWrapped,
-    activeEffectName:groupEffects[_effectTabIndexWrapped].key
+    activeEffectName: groupEffects[_effectTabIndexWrapped].key
    })
   }
+
+  /*let _upDown = keyboard.get(Keys.UP.toString())
+  let _downDown = keyboard.get(Keys.DOWN.toString())
+  */
+
 
   this.setState({ tabIndex: tabIndex })
  }
 
-
+ /*
+ SPACE
+   Select / un slected the main group
+ */
  _setGroupSelection(keyboard, tabIndex) {
   const { keyUp } = this.props
   let spaceKey = keyboard.get('selectionMap')[Keys.SPACE]
@@ -200,17 +209,22 @@ class ControlsEffects extends Component {
      activeEffectGroupIndex: NaN
     })
    }
-   //need to reset else stackoverflow
-   keyUp(Keys.SPACE)
-   let { groupEffects, groupId } = this._groups[this.state.groupEffectIndex]
-   this._updateEffectSelection(
-    groupEffects,
-    (_notSet ? (this.state.effectIndex || 0) : NaN),
-    groupId
-   )
+   //need to reset else stackoverflow, is selectect
+   if (!isNaN(this.state.groupEffectIndex)) {
+    keyUp(Keys.SPACE)
+    let { groupEffects, groupId } = this._groups[this.state.groupEffectIndex]
+    this._updateEffectSelection(
+     groupEffects,
+     (_notSet ? (this.state.effectIndex || 0) : NaN),
+     groupId
+    )
+   }
   }
  }
 
+ /*
+ highlighting
+ */
  _setSliderClasses(active, index) {
   this._groupSliderEls.forEach((el, i) => {
    el.classList.remove('is-selected')
@@ -220,6 +234,9 @@ class ControlsEffects extends Component {
   }
  }
 
+ /*
+ The effect has been selected or unselected
+ */
  _updateEffectSelection(groupEffects, selectedIndex, groupId) {
   const { effectSelected } = this.props
   groupEffects.forEach((effectKey, index) => {
@@ -259,6 +276,11 @@ class ControlsEffects extends Component {
   let _els = _.values(effects.get(groupId))
    .map(effect => {
     if (effect.slider) {
+     let props = Object.assign({},
+      this._sliderProps(effect), {
+       group: groupId
+      }
+     )
      _effectKeys.push(effect.key)
      return <ControlsSliderState
      ref = { effect.key }
@@ -266,11 +288,7 @@ class ControlsEffects extends Component {
      vertical = { effect.vertical }
      sliderValue = { _.find(this._effectsControl, { key: effect.key }) }
      props = {
-      Object.assign({},
-       this._sliderProps(effect), {
-        group: groupId
-       }
-      )
+      props
      }
      />
     }

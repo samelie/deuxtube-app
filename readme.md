@@ -1,3 +1,3 @@
-TO MAKE A NEW PROJECT, BRANCH FROM MASTER
+NOTES
 
-Remember to change webpack env vars and the bin/copy_dist_to.sh
+Redux way, keyboard inputs from reducer down

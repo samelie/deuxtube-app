@@ -1,3 +1,4 @@
+export const APP_LOGGED_IN = 'APP_LOGGED_IN';
 export const APP_EXPORT_URL = 'APP_EXPORT_URL';
 export const APP_RECORD = 'APP_RECORD';
 export const APP_SAVE = 'APP_SAVE';

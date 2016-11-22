@@ -30,12 +30,47 @@ class QueryResults extends Component {
     let item = _.find(query.get('results').items, {
       videoId:videoId
     })
-    console.log(item);
     movePlaylistItem({
       key: query.get('results').id,
       item: item,
       value: videoId
     })
+  }
+
+  _onAddAll() {
+    const { query, movePlaylistItem, id } = this.props;
+    const { playlist } = this.props
+    const items = query.get('results').items
+    const key = query.get('results').id
+    let _reverse = [...playlist].reverse()
+    console.log(_reverse);
+    _reverse.forEach(videoId => {
+      let item = _.find(items, {
+        videoId: videoId
+      })
+      console.log(item);
+      movePlaylistItem({
+        key: key,
+        item: item,
+        value: videoId
+      })
+    })
+  }
+
+
+  _renderAddAll(){
+    const { playlist } = this.props
+    if(!playlist.length){
+      return (<div></div>)
+    }
+
+    return (<div
+        onClick={()=>{
+          this._onAddAll()
+        }}
+        className="video-playlist__text">
+        Add all
+     </div>)
   }
 
   render() {
@@ -58,7 +93,10 @@ class QueryResults extends Component {
       ref="videoPlaylist"
       className={`video-playlist ${className}`}
       >
-        {[..._items]}
+        <div className="video-playlist__results">
+          {[..._items]}
+        </div>
+        {this._renderAddAll()}
       </div>
     );
   }
