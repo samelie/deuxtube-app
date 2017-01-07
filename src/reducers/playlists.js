@@ -7,10 +7,9 @@ import {
 
 import { Map, Record } from 'immutable';
 
-/*const initialState =  Map({
-});*/
+const initialState = new Map()
+  //the one which is being searched
 
-const initialState = new Map();
 
 /**
  * [projects description]
@@ -58,7 +57,6 @@ export default function playlists(state = initialState, action) {
       })
       return state.set(action.payload.key, _action)
       break;
-
     default:
       {
         return state;

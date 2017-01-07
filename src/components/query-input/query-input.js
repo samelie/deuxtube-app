@@ -55,7 +55,7 @@ class QueryInput extends Component {
   }
 
   _onSearchClicked(value) {
-    const { onQueryResponse,setQuery,id } = this.props;
+    const { onQueryResponse, setQuery, id } = this.props;
     value = value || this.refs.input.value
     let _videoId = YOUTUBE_VIDEO_RE.exec(value)
     if (_videoId) {
@@ -72,19 +72,19 @@ class QueryInput extends Component {
       this._makePlaylistQuery(_playlistId)
         .then(results => {
           //goes to playliat
-          setQuery({id, results})
-          //onQueryResponse(results)
+          setQuery({ id, results })
+            //onQueryResponse(results)
         }).finally()
     } else if (_videoId) {
       this._makeVideoQuery(_videoId)
         .then(results => {
-          setQuery({id, results})
-          //onQueryResponse(results)
+          setQuery({ id, results })
+            //onQueryResponse(results)
         }).finally()
-    }else{
+    } else {
       this._search(value)
         .then(results => {
-          setQuery({id, results})
+          setQuery({ id, results })
         }).finally()
     }
 
@@ -97,21 +97,32 @@ class QueryInput extends Component {
   }
 
   _search(v) {
+    const { auth } = this.props
+    const { accessToken } = auth.get('youtube')
     return this._socket.youtube.search({
       q: v,
+      access_token: accessToken,
       force: true
     })
   }
 
   _makePlaylistQuery(v) {
+    const { auth } = this.props
+    const { accessToken } = auth.get('youtube')
     return this._socket.youtube.playlistItems({
       playlistId: v,
+      access_token: accessToken,
       force: true
     })
   }
 
   _makeVideoQuery(v) {
-    return this._socket.youtube.video({ id: v })
+    const { auth } = this.props
+    const { accessToken } = auth.get('youtube')
+    return this._socket.youtube.video({
+      id: v,
+      access_token: accessToken
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -122,6 +133,7 @@ class QueryInput extends Component {
     const { browser } = this.props;
     return (
       <input
+       tabIndex="-1"
        ref="input"
        className="input"
       ></input>
@@ -129,7 +141,8 @@ class QueryInput extends Component {
   }
 }
 
-export default connect(({ browser }) => ({
+export default connect(({ browser, auth }) => ({
+  auth,
   browser,
 }), {
   setQuery

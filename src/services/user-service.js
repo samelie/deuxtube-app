@@ -1,16 +1,18 @@
+import Socket from '../utils/socket';
 import Q from 'bluebird';
 
-const LOGIN_SERVICE = (() => {
-  let socket
+const USER_SERVICE = (() => {
+  const socket = Socket.socket
 
   const ERROR_TYPES = {
     INCOMPLETE:'INCOMPLETE',
-    MISMATCH:'MISMATCH'
+    MISMATCH:'MISMATCH',
+    STORE_VIDEO_FAILED:'STORE_VIDEO_FAILED',
   }
 
-  function init(s) {
-    socket = s
-  }
+  /*
+  LOGIN
+  */
 
   function login(username, password) {
     return new Q((yes, no) => {
@@ -64,12 +66,40 @@ const LOGIN_SERVICE = (() => {
   }
 
 
+  /*
+  SAVE
+  */
+
+  function storeVideo(username, field, value) {
+     return new Q((yes, no) => {
+
+      let params = {
+        key: username,
+        field: field,
+        value:value
+      }
+
+      let _s = `rad:user:videos:resp`
+      socket.on(_s, function(results) {
+        socket.removeListener(_s, arguments[0].callee)
+        if(results === 1){
+          yes(true)
+        }else{
+          no(new Error(ERROR_TYPES.STORE_VIDEO_FAILED))
+        }
+      })
+      console.log(params);
+      socket.emit('rad:user:videos', params)
+    })
+  }
+
+
   return {
-    init: init,
     login: login,
+    storeVideo: storeVideo,
     ERROR_TYPES:ERROR_TYPES
   }
 
 })()
 
-export default LOGIN_SERVICE
+export default USER_SERVICE

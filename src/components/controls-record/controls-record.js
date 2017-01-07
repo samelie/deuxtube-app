@@ -8,7 +8,11 @@ import Keys from '../../utils/keys';
 import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter'
 import { record, save } from '../../actions/app';
+
+import BasicButton from '../ui/basic-button';
+
 import Config from '../../utils/config'
+
 const VERBOSE = false
 
 class controlsRecord extends Component {
@@ -64,18 +68,26 @@ class controlsRecord extends Component {
       <div ref="controlsRecord" className="controls-record">
         <div className="controls-record__info">
         </div>
-        <button  onClick={()=>{
-          let _r = !this.state.recording
-          record(_r)
-          this.setState({recording:_r})
-          //this._onRecord(_r)
-        }}>RECORD</button>
+
+        <BasicButton
+          onClick={()=>{
+            let _r = !this.state.recording
+            record(_r)
+            this.setState({recording:_r})
+            //this._onRecord(_r)
+          }}
+          text={'RECORD'}
+        />
         <div className="controls-record__time">
           {this.state.timeRecorded} / {this.state.audioDuration}
         </div>
-        <button onClick={()=>{
-          save(true)
-        }}>SAVE</button>
+
+        <BasicButton
+          onClick={()=>{
+            save(true)
+          }}
+          text={'SAVE'}
+        />
         <div ref ="sl" className="controls-effects__status">{this.state.activeEffectName}</div>
       </div>
     );

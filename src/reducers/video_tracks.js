@@ -36,7 +36,8 @@ const InitialState = Record({
       chooseBest: false,
     },
     playlists: [
-      'PLuTh1a1eg5vZ1PnDQIiolbphrhaX07hxR',
+      //'PLRQ2jIXShfkZJVMtF-eUx6kimLPdUE8hb'
+      //'PLqL0pXShgu8c1W-D5_HJOMs920LopS02E', //vines
       //'PLFFC0DE5C257B32AF',
       //'PLONlV9FPbFJXohQ4BavJgHrtrTJKuSct4',
       //'PLRQ2jIXShfkZcTp4rsP8uJotv6fOZas_v',
@@ -64,7 +65,7 @@ const InitialState = Record({
       chooseBest: false,
     },
     playlists: [
-      'PLZRcgvIPIUuXiXOSVc3QU-Qi96w_63Pz4',
+      //'PLZRcgvIPIUuXiXOSVc3QU-Qi96w_63Pz4',
       //'PLZRcgvIPIUuVGLl0qf6-NXxIk2L4GdxaO'
       //'PLRQ2jIXShfkZcTp4rsP8uJotv6fOZas_v',
       //'PLZRcgvIPIUuW22caHjgZZAvTnH3QhvPNY'

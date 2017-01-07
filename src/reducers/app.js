@@ -9,7 +9,7 @@ import { Record, Map } from 'immutable';
 
 
 const initialState = new Map()
-  .set('loggedIn', false)
+  .set('user', false)
   .set('saving', false)
   .set('recording', false)
   .set('saved', false)
@@ -26,7 +26,7 @@ export default function app(state = initialState, action) {
   switch (action.type) {
     case APP_LOGGED_IN:
       {
-        return state.set('loggedIn', action.payload)
+        return state.set('user', action.payload)
       }
     case APP_EXPORT_URL:
       {

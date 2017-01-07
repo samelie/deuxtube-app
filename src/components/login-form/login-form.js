@@ -9,9 +9,7 @@ import createFragment from 'react-addons-create-fragment'
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { fetchJson } from '../../utils/fetch';
-import Socket from '../../utils/socket';
-
-import LoginFormService from './login-form-service'
+import UserSocket from '../../services/user-service';
 
 import ActionButton from '../ui/action-button'
 import Input from '../input/input'
@@ -48,7 +46,6 @@ class LoginForm extends Component {
   }
 
   componentDidMount() {
-    LoginFormService.init(Socket.socket)
   }
 
   onUsernameChanged(e) {
@@ -61,7 +58,7 @@ class LoginForm extends Component {
 
   onStart() {
     const { loggedIn } = this.props;
-    return LoginFormService
+    return UserSocket
     .login(this._username, this._password)
     .then(user=>{
       this.setState({user:user})

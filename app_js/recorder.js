@@ -43,6 +43,8 @@ module.exports = function UserRecord() {
     return _recorder.save(options)
       .then(final => {
 
+
+
         console.log(final);
         /*return GOOGLE.store(final)
           .then(uploadedPath => {

@@ -126,7 +126,7 @@ class AudioTrack extends Component {
   this.audio.load(videoId, AUDIO_CHUNKS_TO_LOAD)
    .then((sound) => {
     this.setState({
-     totalDuration: sound.duration,
+     totalDuration: sound.duration.toFixed(1),
      duration: sound.duration
     })
     this._startUpdate()

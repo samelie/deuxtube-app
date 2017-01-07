@@ -2,6 +2,8 @@ import {
   PLAYLIST_CREATE,
   PLAYLIST_SET,
   PLAYLIST_ITEM_MOVE,
+  PLAYLIST_NEXT,
+  PLAYLIST_PREVIOUS,
   PLAYLIST_ITEM_DELETE,
 } from '../constants/action-types';
 
@@ -19,7 +21,6 @@ export function setPlaylist(payload = {}) {
   };
 }
 
-
 export function movePlaylistItem(payload = {}) {
   return {
     type: PLAYLIST_ITEM_MOVE,
@@ -30,6 +31,21 @@ export function movePlaylistItem(payload = {}) {
 export function deletePlaylistItem(payload = {}) {
   return {
     type: PLAYLIST_ITEM_DELETE,
+    payload: payload
+  };
+}
+
+
+export function playlistNextVideo(payload = {}) {
+  return {
+    type: PLAYLIST_NEXT,
+    payload: payload
+  };
+}
+
+export function playlistPreviousVideo(payload = {}) {
+  return {
+    type: PLAYLIST_PREVIOUS,
     payload: payload
   };
 }

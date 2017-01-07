@@ -1,0 +1,11 @@
+.instruction{
+  position: absolute;
+  top:50%;
+  transform:translateX(-100%) translateY(-50%);
+  background-color: rgba(230,230,230,0.5);
+
+  &.accessed{
+    visibility: hidden;
+    opacity: 0;
+  }
+}

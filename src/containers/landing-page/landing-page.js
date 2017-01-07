@@ -13,6 +13,7 @@ import ReactHtmlParser from 'react-html-parser';
 
 import AudioTrackForm from '../../components/audio-track-form/audio-track-form';
 import LoginForm from '../../components/login-form/login-form';
+import Auth from '../../components/auth/auth';
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -32,7 +33,7 @@ class LandingPage extends Component {
     super(props)
     this.state = {
       ready: false,
-      loggedIn:false,
+      user:false,
       bgImageStyle: {
         //background: `url(${process.env.REMOTE_ASSETS_DIR}images/dog.jpg) no-repeat center center fixed`,
       }
@@ -45,8 +46,9 @@ class LandingPage extends Component {
 
   componentWillReceiveProps(nextProps) {
     const {app} = nextProps
-    if(app.get('loggedIn')){
-      this.setState({loggedIn:true})
+    let user = app.get('user')
+    if(user){
+      this.setState({user:user})
     }
   }
 
@@ -71,7 +73,7 @@ class LandingPage extends Component {
   }
 
   _renderTrackForm(){
-    if(this.state.loggedIn){
+    if(this.state.user){
       return (<AudioTrackForm/>)
     }
     return <div></div>
@@ -81,6 +83,7 @@ class LandingPage extends Component {
     const { browser } = this.props;
     return (
       <div className="o-page landing">
+        <Auth />
         <LoginForm />
         {this._renderTrackForm()}
       </div>

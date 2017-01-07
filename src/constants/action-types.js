@@ -3,6 +3,9 @@ export const APP_EXPORT_URL = 'APP_EXPORT_URL';
 export const APP_RECORD = 'APP_RECORD';
 export const APP_SAVE = 'APP_SAVE';
 
+export const AUTH_INSTA = 'AUTH_INSTA';
+export const AUTH_YOUTUBE = 'AUTH_YOUTUBE';
+
 export const KEYBOARD_DOWN = 'KEYBOARD_DOWN';
 export const KEYBOARD_UP = 'KEYBOARD_UP';
 
@@ -29,6 +32,9 @@ export const AUDIO_SET = 'AUDIO_SET';
 export const PLAYLIST_CREATE = 'PLAYLIST_CREATE';
 export const PLAYLIST_SET = 'PLAYLIST_SET';
 export const PLAYLIST_ITEM_MOVE = 'PLAYLIST_ITEM_MOVE';
+export const PLAYLIST_ITEMS_MOVE = 'PLAYLIST_ITEMS_MOVE';
+export const PLAYLIST_NEXT = 'PLAYLIST_NEXT';
+export const PLAYLIST_PREVIOUS = 'PLAYLIST_PREVIOUS';
 export const PLAYLIST_ITEM_DELETE = 'PLAYLIST_ITEM_DELETE';
 
 export const RESIZE = 'RESIZE';

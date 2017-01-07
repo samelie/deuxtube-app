@@ -19,7 +19,7 @@ export const FILTER_ONLY_MP3 = true
 export const TIME_ON_LOCATION_COVER = 10000
 
 //deux-tube
-export const PLAYBAR_SEEK_DISTANCE = 0.05
+export const PLAYBAR_SEEK_DISTANCE = 0.02
 export const PLAYBAR_SEEK_DISTANCE_LOOP = 0.01
 export const CONTROLS_BAR_INCRE = 0.05
 export const VIDEO_WIDTH = 640
@@ -30,6 +30,7 @@ export const RECORDING_FRAME_FMT = 'image/jpeg'
 export const RECORDING_FRAME_Q = 0.8
 export const RECORDING_FRAME_EXT = '.webp'
 
-export const AUDIO_CHUNKS_TO_LOAD = process.env.IS_APP ? 999 : 3
+
+export const AUDIO_CHUNKS_TO_LOAD =  process.env.IS_APP ? 999 : 3
 
 

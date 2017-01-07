@@ -27,11 +27,14 @@ import VideoPlaylist from '../../components/video-playlist/video-playlist'
 
 import DeuxTube from '../../components/deux-tube/deux-tube';
 import Playbar from '../../components/playbar/playbar';
+import PlaylistControls from '../../components/playlist-controls/playlist-controls';
+import Social from '../../components/social/social';
+import MakeStatus from '../../components/make-status/make-status';
 
 import {
- VIDEO_WIDTH,
- VIDEO_HEIGHT,
- RECORDING_FRAME_EXT
+  VIDEO_WIDTH,
+  VIDEO_HEIGHT,
+  RECORDING_FRAME_EXT
 } from '../../constants/config';
 
 import Query from '../../components/query/query';
@@ -40,222 +43,237 @@ import SavingProgress from '../../components/saving-progress/saving-progress';
 
 class MakePage extends Component {
 
- static propTypes = {
-  browser: PropTypes.object.isRequired
- };
+  static propTypes = {
+    browser: PropTypes.object.isRequired
+  };
 
- static childContextTypes = {
-  videoId: React.PropTypes.string
- }
-
- constructor(props) {
-  super(props)
-  this.state = {
-   bgImageStyle: {
-    //background: `url(${process.env.REMOTE_ASSETS_DIR}images/dog.jpg) no-repeat center center fixed`,
-   }
+  static childContextTypes = {
+    videoId: React.PropTypes.string
   }
 
-  this._recorderProp = {
-   counter: 0
+  constructor(props) {
+    super(props)
+    this.state = {
+      bgImageStyle: {
+        //background: `url(${process.env.REMOTE_ASSETS_DIR}images/dog.jpg) no-repeat center center fixed`,
+      }
+    }
+
+    this._recorderProp = {
+      counter: 0
+    }
+    this._savingProgressProp = {
+      progress: 0
+    }
   }
-  this._savingProgressProp = {
-   progress: 0
+
+  getChildContext() {
+    return {
+      videoId: this.props.params.id
+    }
   }
- }
 
- getChildContext() {
-  return {
-   videoId: this.props.params.id
+  componentWillReceiveProps(nextProps) {
+    let { app, audio, query } = nextProps
+    const { dispatch } = this.props;
+    if (app.get('saving') && !this.state.saving) {
+      this.setState({ saving: true })
+      let _media = audio.get('track')
+      let _dur = _media.totalDuration
+      let _s = _media.range.sliderValue[0]
+      let _e = _media.range.sliderValue[1]
+      let _diff = _e - _s
+
+      if (process.env.IS_APP) {
+
+        Q.map(this._recorder.frameBuffers, (buffer) => {
+            return global.recorder.addFrame(buffer)
+          }, { concurrency: 1 })
+          .then(r => {
+            this._recorder.frameBuffers.length = 0
+
+            global.recorder.save({
+                width: VIDEO_WIDTH,
+                height: VIDEO_HEIGHT,
+                withBuffers: false,
+                inputOptions: [
+                  `-ss ${(_dur * _s).toFixed()} `
+                ],
+                outputOptions: [
+                  `-t ${(_dur * _diff).toFixed(0)} `
+                ]
+              })
+              .then(obj => {
+                //???? dunno
+                let { url, name } = obj.url
+                let { local } = obj
+
+                EAPI.videoSaved(local)
+
+                global.EAPI.onVideoSaved = (newSave) => {
+                  dispatch(exportUrl({ url: url, local: newSave }))
+                  const path = `/wow/${name}`
+                  dispatch(push(path));
+                }
+              })
+          }).finally()
+
+      } else {
+        this._recorder.save({
+          width: VIDEO_WIDTH,
+          height: VIDEO_HEIGHT,
+          frameExt: RECORDING_FRAME_EXT,
+          withBuffers: false,
+          inputOptions: [
+            `-ss ${(_dur * _s).toFixed()} `
+          ],
+          outputOptions: [
+            `-t ${(_dur * _diff).toFixed(0)} `
+          ]
+        })
+      }
+    }
+    this._renderVideoQueryResults(nextProps)
   }
- }
 
- componentWillReceiveProps(nextProps) {
-  let { app, audio, query } = nextProps
-  const { dispatch } = this.props;
-  if (app.get('saving') && !this.state.saving) {
-   this.setState({ saving: true })
-   let _media = audio.get('track')
-   let _dur = _media.totalDuration
-   let _s = _media.range.sliderValue[0]
-   let _e = _media.range.sliderValue[1]
-   let _diff = _e - _s
-
-   if (process.env.IS_APP) {
-
-    Q.map(this._recorder.frameBuffers, (buffer) => {
-      return global.recorder.addFrame(buffer)
-     }, { concurrency: 1 })
-     .then(r => {
-      this._recorder.frameBuffers.length = 0
-
-      global.recorder.save({
-        width: VIDEO_WIDTH,
-        height: VIDEO_HEIGHT,
-        withBuffers: false,
-        inputOptions: [
-         `-ss ${(_dur * _s).toFixed()} `
-        ],
-        outputOptions: [
-         `-t ${(_dur * _diff).toFixed(0)} `
-        ]
-       })
-       .then(obj => {
-        console.log(obj);
-        //???? dunno
-        let { url, name } = obj.url
-        let { local } = obj
-        dispatch(exportUrl({ url: url, local: local }))
-        const path = `/wow/${name}`
-        dispatch(push(path));
-       })
-     }).finally()
-
-   } else {
-    this._recorder.save({
-     width: VIDEO_WIDTH,
-     height: VIDEO_HEIGHT,
-     frameExt: RECORDING_FRAME_EXT,
-     withBuffers: false,
-     inputOptions: [
-      `-ss ${(_dur * _s).toFixed()} `
-     ],
-     outputOptions: [
-      `-t ${(_dur * _diff).toFixed(0)} `
-     ]
+  componentDidMount() {
+    const { browser, app, params, dispatch } = this.props;
+    //pipe too heavy i think
+    this._recorder = new DashRecorder(Socket.socket, {
+      pipe: false
     })
-   }
+
+    this._recorder.on('saved', (obj) => {
+      //???? dunno
+      let { url, name } = obj.url
+      let { local } = obj
+
+
+      dispatch(exportUrl({ url: url, local: local }))
+      const path = `/wow/${name}`
+      dispatch(push(path));
+    })
+
+    this._recorder.on('progress', (percent) => {
+      console.log(percent);
+      this._savingProgressProp.progress = percent
+    })
+
+    Emitter.on('controls:record:save', () => {
+      /* let _dur = app.media.audio.totalDuration
+       let _s = app.media.audio.range.sliderValue[0]
+       let _e = app.media.audio.range.sliderValue[1]
+       let _diff = _e - _s*/
+      //this._recorder.concatFrames()
+
+
+      //this._saving()
+    })
   }
-  this._renderVideoQueryResults(nextProps)
- }
 
- componentDidMount() {
-  const { browser, app, params, dispatch } = this.props;
-  //pipe too heavy i think
-  this._recorder = new DashRecorder(Socket.socket, {
-   pipe: false
-  })
-
-  this._recorder.on('saved', (obj) => {
-   //???? dunno
-   let { url, name } = obj.url
-   let { local } = obj
-   dispatch(exportUrl({ url: url, local: local }))
-   const path = `/wow/${name}`
-   dispatch(push(path));
-  })
-
-  this._recorder.on('progress', (percent) => {
-   console.log(percent);
-   this._savingProgressProp.progress = percent
-  })
-
-  Emitter.on('controls:record:save', () => {
-   /* let _dur = app.media.audio.totalDuration
-    let _s = app.media.audio.range.sliderValue[0]
-    let _e = app.media.audio.range.sliderValue[1]
-    let _diff = _e - _s*/
-   //this._recorder.concatFrames()
+  _saving() {
+    this.refs.make.classList.add('saving')
+  }
 
 
-   //this._saving()
-  })
- }
+  /*
+  This is async, so we know the audio is last to be added
 
- _saving() {
-  this.refs.make.classList.add('saving')
- }
+  NEED TO PREFIX THE INDEX RANGE!!!!
 
+  */
+  _addAudio(buffer) {
+    this._recorder.addAudio(buffer)
+  }
 
- /*
- This is async, so we know the audio is last to be added
+  _addFrame(buffer) {
+    this._recorder.addFrame(buffer)
+  }
 
- NEED TO PREFIX THE INDEX RANGE!!!!
+  //<Controls/>
+  //<Player/>
+  //<Query/>
+  /*
+  <div className="make__tube">
+          <div className="youtube__query">
 
- */
- _addAudio(buffer) {
-  this._recorder.addAudio(buffer)
- }
+          </div>
+          <div className="deuxtube__playlist">
+          </div>
+        </div>
+  */
 
- _addFrame(buffer) {
-  this._recorder.addFrame(buffer)
- }
-
- //<Controls/>
- //<Player/>
- //<Query/>
- /*
- <div className="make__tube">
-         <div className="youtube__query">
-
-         </div>
-         <div className="deuxtube__playlist">
-         </div>
-       </div>
- */
-
- _renderVideoPlaylist() {
-  const { playlists } = this.props;
-  return playlists.map(playlistObj => {
-   return (
-    <div className="make--media--cell">
+  _renderVideoPlaylist() {
+    const { playlists } = this.props;
+    let i = -1
+    return playlists.map((playlistObj) => {
+      i++
+      return (
+        <div className="make--media--cell">
           <VideoPlaylist
+            index={i}
             id={playlistObj.get('id')}
             className="video-playlist--query"
             playlist={playlistObj.get('playlist')}
            />
          </div>
-   )
-  })
- }
-
- _renderVideoQueryResults(props) {
-  const { query } = props || this.props;
-  const results = query.get('results')
-  if (!results) {
-   return (<div></div>)
+      )
+    })
   }
-  return (
-   <div className="make--media--cell">
+
+  _renderVideoQueryResults(props) {
+    const { query } = props || this.props;
+    const results = query.get('results')
+    if (!results) {
+      return (<div></div>)
+    }
+    return (
+      <div className="make--media--cell">
           <QueryResults
             id={results.id}
             className="video-playlist--query"
             playlist={results.videoIds}
         />
       </div>
-  )
- }
+    )
+  }
 
- _renderVideoTracks() {
-  const { videoTracks } = this.props;
-  return videoTracks.tracks.map((config, index) => {
-   let _id = config.id
-   return <VideoTrack
+  _renderMakeStatus() {
+    return <MakeStatus/>
+  }
+
+  _renderVideoTracks() {
+    const { videoTracks } = this.props;
+    return videoTracks.tracks.map((config, index) => {
+      let _id = config.id
+      return <VideoTrack
         index={index}
         id={_id}
         key={_id}
         el={this.refs.make}
         config={config}
         />
-  })
- }
+    })
+  }
 
- render() {
-  const { browser, params } = this.props;
-  return (
-   <div ref="make" style={this.state.bgImageStyle} className="o-page make make--interactive">
+  render() {
+    const { browser, params } = this.props;
+    return (
+      <div ref="make" style={this.state.bgImageStyle} className="o-page make make--interactive">
 
         <div className="u-page--col--big">
           <div className="make--playerblock">
             <div className="make--video">
               <DeuxTube addFrame={this._addFrame.bind(this)}/>
               <Playbar addFrame={this._addFrame.bind(this)}/>
+              <PlaylistControls/>
+              <Social/>
             </div>
             <div className="make--media">
 
               {this._renderVideoPlaylist()}
               {this._renderVideoQueryResults()}
-
+              {this._renderMakeStatus()}
             </div>
           </div>
           <div className="make--effectsblock">
@@ -274,15 +292,15 @@ class MakePage extends Component {
           </div>
         </div>
       </div>
-  );
- }
+    );
+  }
 }
 
 export default connect(({ browser, app, audio, query, videoTracks, playlists }) => ({
- browser,
- app,
- audio,
- query,
- videoTracks,
- playlists,
+  browser,
+  app,
+  audio,
+  query,
+  videoTracks,
+  playlists,
 }))(MakePage);

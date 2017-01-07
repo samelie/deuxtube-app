@@ -13,6 +13,7 @@ import {
 import PlaylistItem from './playlistItem';
 import Emitter from '../../utils/emitter';
 import Keys from '../../utils/keys';
+import Keyboard from '../../utils/keyboard';
 
 class VideoPlaylist extends Component {
 
@@ -30,8 +31,22 @@ class VideoPlaylist extends Component {
     return true
   }*/
 
+  componentWillReceiveProps(nextProps){
+    const {keyboard, index} = this.props
+    let _isSelected = Keyboard.selectedVideoTrack(
+    keyboard.get('selectionMap'),
+    index
+    )
+  }
+
   _queueItemClicked(videoId) {
-    const { playlist, keyboard, movePlaylistItem, deletePlaylistItem, id } = this.props;
+    const {
+      playlist,
+      keyboard,
+      movePlaylistItem,
+      deletePlaylistItem,
+      id
+    } = this.props;
     let _shiftDown = keyboard.get(Keys.SHIFT.toString())
     let indexOf = playlist.indexOf(videoId)
     if (_shiftDown) {
