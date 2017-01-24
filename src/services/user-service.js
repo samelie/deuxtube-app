@@ -2,7 +2,7 @@ import Socket from '../utils/socket';
 import Q from 'bluebird';
 
 const USER_SERVICE = (() => {
-  const socket = Socket.socket
+  const socket = Socket.remoteSocket
 
   const ERROR_TYPES = {
     INCOMPLETE:'INCOMPLETE',
@@ -41,6 +41,7 @@ const USER_SERVICE = (() => {
           }
         }
       })
+      console.log(params);
       socket.emit('rad:user:login', params)
     })
   }
@@ -53,7 +54,9 @@ const USER_SERVICE = (() => {
   }
 
   function _getUser(username) {
-    return JSON.parse(localStorage.getItem(`user:${username}`)) || {}
+    const u = JSON.parse(localStorage.getItem(`user:${username}`)) || {}
+    console.log(u);
+    return u
   }
 
   function _setUser(username, obj) {
@@ -96,6 +99,7 @@ const USER_SERVICE = (() => {
 
   return {
     login: login,
+    getUser: _getUser,
     storeVideo: storeVideo,
     ERROR_TYPES:ERROR_TYPES
   }

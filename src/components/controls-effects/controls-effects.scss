@@ -1,6 +1,10 @@
 @import 'mixins';
 @import 'colors';
 .controls-effects{
+
+  .slider{
+    position: relative;
+  }
   position: relative;
   width: 80%;
   height: 100%;
@@ -39,6 +43,13 @@
   &__blend{
     position: relative;
   }
+}
+
+.controls-slider{
+  position: relative;
+  height:100%;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 

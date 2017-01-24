@@ -63,8 +63,6 @@ class LandingPage extends Component {
 
   onInputChanged(e) {
     this._url = e.target.value
-    console.log(this._url);
-
   }
 
   onStart() {

@@ -9,6 +9,7 @@ import {
 } from '../../actions/effects';
 
 import Keys from '../../utils/keys';
+import Utils from '../../utils/utils';
 
 import {
   CONTROLS_BAR_INCRE,
@@ -59,7 +60,7 @@ class ControlsSlider extends Component {
       key === _selected.key
     ) {
       //key pressed is set from app.js > effects
-      if(_shiftDown || _keyPressed){
+      if (_shiftDown || _keyPressed) {
         this.setState({
           value: _selected.value * props.slider.max
         })
@@ -71,15 +72,53 @@ class ControlsSlider extends Component {
     return this.refs[this.sliderRef].refs.slider
   }
 
+  get sliderHeight(){
+    return parseInt(this.slider.offsetHeight,10)
+  }
+
   get sliderRef() {
     const { props } = this.props
     return `slider_${props.key}`
+  }
+  _onMouseOver(e) {
+    this._startY = e.pageY
+    this.startValue =  this.state.value
+  }
+  _onMouseMove(e) {
+    const d = this._startY - e.pageY
+    const { props } = this.props
+    const v = d/this.sliderHeight
+    this.setState({
+      value: Utils.clamp(this.startValue + v,
+        props.min,
+        props.max)
+    })
+  }
+
+  _onMouseOut(e) {
+
   }
 
   render() {
     const { props, sliderValue, vertical } = this.props
     let _clasz = (vertical ? "is-vertical" : "is-horizontal")
-    return ( <Rcslider ref = { this.sliderRef }
+    return ( < div className = { `controls-slider` }
+      onMouseOver = {
+        (e) => {
+          this._onMouseOver(e)
+        }
+      }
+      onMouseMove = {
+        (e) => {
+          this._onMouseMove(e)
+        }
+      }
+      onMouseOut = {
+        (e) => {
+          this._onMouseOut(e)
+        }
+      } >
+      <Rcslider ref = { this.sliderRef }
       className = { `effects-slider ${_clasz}` }
       onChange = {
         (val) => {
@@ -100,7 +139,7 @@ class ControlsSlider extends Component {
         }
       }
       vertical = { vertical } {...Object.assign({}, props.slider) }
-      />
+      /> < /div >
     )
   }
 }

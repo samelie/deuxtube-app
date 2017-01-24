@@ -31,7 +31,7 @@ class QueryInput extends Component {
 
   componentDidMount() {
     const { placeholder } = this.props;
-    const socket = Socket.socket;
+    const socket = Socket.localSocket;
     this._socket = new YoutubeSocket(socket)
 
     this.refs.input.addEventListener('focusin', () => {

@@ -112,7 +112,7 @@ class AudioTrack extends Component {
   componentDidMount() {
     const { el, config, createPlaylist, setPlaylist, playbarUpdate } = this.props;
     const { id } = config
-    this._player = new Video({ el: el, socket: Socket.socket })
+    this._player = new Video({ el: el, socket: Socket.localSocket })
     this._player.addSource(config)
     this._player.start()
 

@@ -13,6 +13,11 @@ import UserSocket from '../../services/user-service';
 import QueryInput from '../../components/query-input/query-input'
 import ActionButton from '../../components/ui/action-button'
 
+import {
+  VIDEO_WIDTH,
+  VIDEO_HEIGHT,
+} from '../../constants/config';
+
 const mapDispatchToProps = dispatch => {
   return {
     onNavigateTo(dest) {
@@ -35,10 +40,13 @@ class CompletePage extends Component {
   }
 
   componentDidMount() {
-    const { app } = this.props
+    const { app,audio } = this.props
+    const finalUrl = app.get('finalSave').url
+    console.log(`componentDidMount() ${finalUrl}`);
     this._fieldStamp = Date.now().toString()
     this._storeVideo({
-      rawUrl: app.get('finalSave').url
+      rawUrl: finalUrl,
+      info: audio.get('info')
     })
   }
 
@@ -46,6 +54,7 @@ class CompletePage extends Component {
     const { app } = this.props
     const _user = app.get('user')
     if (!_user) {
+      throw new Error('No user')
       return
     }
     UserSocket.storeVideo(
@@ -81,17 +90,18 @@ class CompletePage extends Component {
   }
 
   uploadVideo() {
-    const { app } = this.props;
+    const { app, audio } = this.props;
+    window.EAPI.onYoutubeUploadProgress = (progress => {})
 
-    global.EAPI.onYoutubeUploadProgress = (progress => {})
-
-    global.EAPI.onYoutubeUploaded = (youtube => {
+    window.EAPI.onYoutubeUploaded = (youtube => {
       const _v = youtube[0]
       this.setState({ youtubeObj: _v })
-      this._storeVideo({ youtube: _v })
+      this._storeVideo({
+        youtube: _v
+      })
     })
 
-    global.EAPI.sendEvent('youtube-upload', {
+    window.EAPI.sendEvent('youtube-upload', {
       local: app.get('finalSave').local,
       title: this.refs.title.value,
       description: this.refs.describe.value
@@ -105,8 +115,8 @@ class CompletePage extends Component {
       return (
         <iframe id="ytplayer" type="text/html"
         autoplay="1"
-        width="640"
-        height="360"
+        width={VIDEO_WIDTH}
+        height={VIDEO_HEIGHT}
         src={`https://www.youtube.com/embed/${id}?autoplay=1`}
         frameborder="0"
         modestbranding="1"></iframe>
@@ -148,7 +158,8 @@ class CompletePage extends Component {
 }
 
 
-export default connect(({ browser, app }) => ({
+export default connect(({ browser, app, audio }) => ({
   browser,
-  app
+  app,
+  audio
 }), mapDispatchToProps)(CompletePage);

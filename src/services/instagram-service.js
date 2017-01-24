@@ -2,7 +2,7 @@ import Socket from '../utils/socket';
 import Q from 'bluebird';
 
 const USER_SERVICE = (() => {
-  const socket = Socket.socket
+  const socket = Socket.localSocket
 
   const ERROR_TYPES = {
     INCOMPLETE:'INCOMPLETE',

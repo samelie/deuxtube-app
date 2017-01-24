@@ -24,6 +24,9 @@ class Instruction extends Component {
 
   componentWillReceiveProps(nextProps){
     const {instructionAccessed} = nextProps
+    if(this.state.instructionAccessed){
+      return
+    }
     this.setState({
       instructionAccessed:instructionAccessed
     })
@@ -37,7 +40,11 @@ class Instruction extends Component {
     const {instructionAccessed} = this.state
     const accessed = instructionAccessed ? 'accessed' : ''
     return (
-      <div className={`instruction ${className} ${accessed}`}>
+      <div className={`instruction ${className} ${accessed}`}
+      onClick={()=>{
+        this.setState({'instructionAccessed':true})
+      }}
+      >
       {text}
     </div>
     )

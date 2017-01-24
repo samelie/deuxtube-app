@@ -33,8 +33,6 @@ class controlsRecord extends Component {
   }
 
   componentDidMount() {
-    const socket = Socket.socket
-    const { videoId } = this.context;
   }
 
   _onRecord(v) {

@@ -21,10 +21,13 @@ ipcMain.on('youtube-upload', (event, arg) => {
   Uploader.init(_cred)
     .then(() => {
       let options = {
+        credentials: arg.credentials,
         title: arg.title,
         description: arg.description
       }
-      Uploader.upload([arg.local], YOUTUBE_RENDER_PLAYLIST, options)
+      Uploader.upload([arg.local],
+          YOUTUBE_RENDER_PLAYLIST,
+          options)
         .then(uploaded => {
           event.sender.send('youtube-upload-resp', uploaded)
         })
@@ -47,17 +50,21 @@ ipcMain.on('videoSaved', (event, arg) => {
 
 let mainWindow
 
+/*require('dotenv')
+  .config({
+    path: path.join(process.cwd(), 'chewb/envvars')
+  })*/
 //server
-//let server = new Chewb(path.join(__dirname, 'chewb/envvars'))
-let server = exec('node chewb/chewb.js', { maxBuffer: NaN },
-  (e, stdout, stderr) => {
-    if (e instanceof Error) {
-      console.error(e);
-      throw e;
-    }
-    console.log('stdout ', stdout);
-    console.log('stderr ', stderr);
-  });
+let server = new Chewb(path.join(__dirname, 'chewb/envvars'))
+  /*let server = exec('node chewb/index.js', { maxBuffer: NaN },
+    (e, stdout, stderr) => {
+      if (e instanceof Error) {
+        console.error(e);
+        throw e;
+      }
+      console.log('stdout ', stdout);
+      console.log('stderr ', stderr);
+    });*/
 
 /*
 server.stdout.on('data', (data) => {

@@ -5,11 +5,13 @@ import {
   APP_SAVE,
 } from '../constants/action-types';
 
+import UserService from '../services/user-service';
+
 import { Record, Map } from 'immutable';
 
 
 const initialState = new Map()
-  .set('user', false)
+  .set('user', UserService.getUser())
   .set('saving', false)
   .set('recording', false)
   .set('saved', false)

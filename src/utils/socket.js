@@ -1,11 +1,16 @@
 import IO from 'socket.io-client';
 const SOCKET = (() => {
-  const socket = IO(SOCKET_SERVER)
-  socket.on('handshake', (data) => {
-    console.log(`Socket Handshake ${JSON.stringify(data)}`)
+  const localSocket = IO(LOCAL_SERVER)
+  localSocket.on('handshake', (data) => {
+    console.log(`Local Socket Handshake ${JSON.stringify(data)}`)
+  });
+  const remoteSocket = IO(REMOTE_SERVER)
+  remoteSocket.on('handshake', (data) => {
+    console.log(`Romote Socket Handshake ${JSON.stringify(data)}`)
   });
   return {
-    socket: socket
+    localSocket: localSocket,
+    remoteSocket: remoteSocket
   }
 })()
 

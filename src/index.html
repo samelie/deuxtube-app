@@ -1,30 +1,35 @@
 <!doctype html>
 <html lang="en" data-framework="javascript">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
     <title>ADddog</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <script src="assets/third-party/modernizr/modernizr.min.js"></script>
-  </head>
-  <body class="hide">
+</head>
+
+<body class="hide">
     <div id="app" class="o-page"></div>
     <script>
-
     var PORT = 8081
-    var SOCKET_SERVER = "http://127.0.0.1:8080"
-    //var SOCKET_SERVER = "https://rad.wtf/redis/"
-     </script>
-    <script>
-    if(require){
-      var path = require('path');
-      require(path.join(process.cwd(),'./dist/assets/js/renderer.js'))
-      global.recorder = require(path.join(process.cwd(),'./dist/assets/js/recorder.js'))()
-    }
+    var REMOTE_SERVER = "https://rad.wtf/"
+    var LOCAL_SERVER = "http://127.0.0.1:1808"
+    var SOCKET_SERVER = REMOTE_SERVER
     </script>
-    <!-- <script src="assets/js/videoEffects.js"></script> -->
+    <script>
+    if (typeof require != 'undefined') {
+        var path = require('path');
+        require(path.join(process.cwd(), './dist/assets/js/renderer.js'))
+        global.recorder = require(path.join(process.cwd(), './dist/assets/js/recorder.js'))()
+    }else{
+
+    }
+    window.EAPI = window.EAPI || {}
+    </script>
     <script src="assets/third-party/polyfill.min.js"></script>
     <script src="assets/third-party/detector/detector.min.js"></script>
-  </body>
+</body>
+
 </html>

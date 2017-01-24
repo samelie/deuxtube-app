@@ -203,7 +203,7 @@ class Player extends Component {
   }
 
   _addVideo(el, options) {
-    let vjPlayer1 = new Video({ el: el, socket: Socket.socket })
+    let vjPlayer1 = new Video({ el: el, socket: Socket.localSocket })
     vjPlayer1.addSource(options)
     vjPlayer1.start()
     return vjPlayer1

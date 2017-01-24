@@ -110,7 +110,7 @@ class MakePage extends Component {
 
                 EAPI.videoSaved(local)
 
-                global.EAPI.onVideoSaved = (newSave) => {
+                window.EAPI.onVideoSaved = (newSave) => {
                   dispatch(exportUrl({ url: url, local: newSave }))
                   const path = `/wow/${name}`
                   dispatch(push(path));
@@ -139,7 +139,7 @@ class MakePage extends Component {
   componentDidMount() {
     const { browser, app, params, dispatch } = this.props;
     //pipe too heavy i think
-    this._recorder = new DashRecorder(Socket.socket, {
+    this._recorder = new DashRecorder(Socket.localSocket, {
       pipe: false
     })
 

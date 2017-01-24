@@ -10,7 +10,6 @@ import { update } from '../../actions/video_record';
 import Gui from './gui'
 import Effects from './effects';
 import Utils from '../../utils/utils';
-import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter'
 import EaseNumbers from '../../utils/easeNumbers'
 
@@ -164,7 +163,7 @@ class DeuxTube extends Component {
         }
         _frameCount++;
         update(_frameCount)
-          //global.EAPI.sendEvent('record-frame', _self._effects.getDataURL('image/png'))
+          //window.EAPI.sendEvent('record-frame', _self._effects.getDataURL('image/png'))
           //global.recorder.addFrame(_self._effects.getDataURL('image/png'))
       }
       _rc++

@@ -108,7 +108,7 @@ class ControlsEffects extends Component {
 
  componentWillReceiveProps(nextProps) {
   const { keyboard, mouse } = nextProps
-  this._processKeyboard(keyboard)
+  //this._processKeyboard(keyboard)
    //this._processMouse(mouse)
  }
 
@@ -282,15 +282,28 @@ class ControlsEffects extends Component {
       }
      )
      _effectKeys.push(effect.key)
-     return <ControlsSliderState
-     ref = { effect.key }
-     key = { effect.key }
-     vertical = { effect.vertical }
-     sliderValue = { _.find(this._effectsControl, { key: effect.key }) }
-     props = {
-      props
-     }
-     />
+
+     /*
+     onMouseOver={(e)=>{
+          console.log(e);
+        }}
+     */
+     return (
+      <div className="slider"
+
+       >
+         <ControlsSliderState
+         ref = { effect.key }
+         key = { effect.key }
+         vertical = { effect.vertical }
+
+         sliderValue = { _.find(this._effectsControl, { key: effect.key }) }
+         props = {
+          props
+         }
+         />
+       </div>
+      )
     }
     return false
    })

@@ -85,6 +85,10 @@ export default class DeuxTubeAudio {
       })
   }
 
+  getVideoInfo(params){
+    return this._audio.getVideoInfo(params)
+  }
+
   get audio() {
     return this._audio
   }

@@ -24,7 +24,7 @@ class Query extends Component {
   }
 
   componentDidMount() {
-    const socket = Socket.socket;
+    const socket = Socket.localSocket;
     this._onClickHandlerBound = this._onClickHandler.bind(this)
     this._socket = new YoutubeSocket(socket)
 
