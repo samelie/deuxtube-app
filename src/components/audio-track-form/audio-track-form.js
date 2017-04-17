@@ -61,7 +61,7 @@ class AudioTrackForm extends Component {
   }
 
   onStart() {
-    let v = this._url || "https://www.youtube.com/watch?v=jbGTggv8IEI"
+    let v = this._url || "https://www.youtube.com/watch?v=DNWS6QoYR1Q"
     this._parseAndNavigate(v)
   }
 
@@ -69,7 +69,6 @@ class AudioTrackForm extends Component {
     const { browser } = this.props;
     return (
       <div className="audio-track-form">
-      <h1>MAKE MUSIC VIDEOS</h1>
       <Input
         onChange={this.onInputChanged.bind(this)}
         placeholder={"paste youtube url here"}

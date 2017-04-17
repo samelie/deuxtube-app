@@ -14,15 +14,19 @@
     <div id="app" class="o-page"></div>
     <script>
     var PORT = 8081
-    var REMOTE_SERVER = "https://rad.wtf/"
     var LOCAL_SERVER = "http://127.0.0.1:1808"
-    var SOCKET_SERVER = REMOTE_SERVER
+    var REMOTE_SERVER = LOCAL_SERVER //"https://rad.wtf/"
+    var SOCKET_SERVER = LOCAL_SERVER
     </script>
     <script>
     if (typeof require != 'undefined') {
         var path = require('path');
         require(path.join(process.cwd(), './dist/assets/js/renderer.js'))
         global.recorder = require(path.join(process.cwd(), './dist/assets/js/recorder.js'))()
+
+        global.ffmpegrecorder = require(path.join(process.cwd(), './dist/assets/js/ffmpeg-recorder.js'))()
+
+        global.ffmpegrecorder.start({output:'test.mp4', format:'mp4'})
     }else{
 
     }

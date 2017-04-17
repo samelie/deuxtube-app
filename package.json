@@ -6,7 +6,6 @@
   "dependencies": {
     "@samelie/dash-player": "git://github.com/samradical/dash-player.git",
     "@samelie/dash-player-youtube-socket": "git://github.com/samradical/dash-player-youtube-socket.git",
-    "@samelie/youtube-uploader": "git://github.com/samradical/youtube-uploader.git",
     "animation-frame": "^0.3.0",
     "assets-loader": "^0.4.0",
     "awesome-sass-easing": "^1.1.2",

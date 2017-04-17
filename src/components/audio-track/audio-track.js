@@ -1,5 +1,6 @@
 import './audio-track.scss';
 import React, { Component, PropTypes } from 'react';
+import { push } from 'react-router-redux';
 import { Link } from 'react-router';
 import Q from 'bluebird';
 import _ from 'lodash';
@@ -17,7 +18,7 @@ import Emitter from '../../utils/emitter';
 import Socket from '../../utils/socket';
 import DeuxTubeAudio from './audio'
 import MediaControls from '../media-controls/media-controls'
-
+import Input from '../input/input'
 import {
   AUDIO_CHUNKS_TO_LOAD,
 } from '../../constants/config';
@@ -70,7 +71,7 @@ class AudioTrack extends Component {
           this._updateRangeState({ sliderValue: val })
           let _dur = val[1] - val[0]
           this.setState({
-            duration: this.audio.sound.duration * _dur
+            duration: (this.audio.sound.duration * _dur).toFixed(1)
           })
         }
       },
@@ -112,6 +113,7 @@ class AudioTrack extends Component {
   componentDidMount() {
     const socket = Socket.localSocket
     const { videoId } = this.context;
+    this.setState({ thumbImage: `https://img.youtube.com/vi/${videoId}/3.jpg` })
     const { addAudio, audioLoaded } = this.props;
     let _self = this
     this.audio = new DeuxTubeAudio(socket)
@@ -126,14 +128,19 @@ class AudioTrack extends Component {
       }
     }, false)
 
-    this.audio.load(videoId, AUDIO_CHUNKS_TO_LOAD)
+    this.audio.load(videoId, AUDIO_CHUNKS_TO_LOAD, { itags: ['140'] })
       .then((sound) => {
         this.setState({
+          ...this.state,
           totalDuration: sound.duration.toFixed(1),
-          duration: sound.duration
+          duration: `${sound.duration.toFixed(1)} seconds`
         })
         this._startUpdate()
-        audioLoaded({ duration: sound.duration })
+        audioLoaded({ duration: sound.duration.toFixed(1) })
+      })
+      .catch(err => {
+        this.setState({ thumbImage: `https://s.ytimg.com/yts/img/meh7-vflGevej7.png` })
+        console.log(err);
       })
 
     this.audio.onPeakSignal.add(peak => {
@@ -154,21 +161,40 @@ class AudioTrack extends Component {
     this.audio.onDropSignal.add(drop => {
       //_self._effects.changeKey()
     })
-
     this._audioInfo()
   }
 
+  _query() {
+    this.refs.qInputSearch.addEventListener('focusin', () => {
+      this._isFocused = true
+    })
+    this.refs.qInputSearch.addEventListener('focusout', () => {
+      this._isFocused = false
+    })
+    window.addEventListener('keyup', (e) => {
+      if (e.keyCode === 13) {
+        if (this._isFocused && this.refs.qInputSearch.value.length) {
+          console.log(this.refs.qInputSearch);
+          this.onInputChanged(this.refs.qInputSearch.value)
+        }
+      }
+    })
+    this.refs.qInputSearch.focus()
+
+    this.refs.qInoutPlaylist.placeholder = "paste youtube playlist"
+  }
+
   _audioInfo() {
-    const {audioInfo} = this.props
+    const { audioInfo } = this.props
     const { videoId } = this.context;
     this.audio.getVideoInfo({
         id: videoId,
         videoId: videoId
       })
       .then(info => {
-        if(info.items[0]){
+        if (info.items[0]) {
           audioInfo(info.items[0])
-        }else{
+        } else {
           console.warm(`No video with  ${id}`);
         }
       })
@@ -237,10 +263,20 @@ class AudioTrack extends Component {
     }
   }
 
+  onInputChanged(e) {
+    const url = e.target.value
+    const ytre = /(youtu\.be\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v)\/))([^\?&"'>]+)/
+    let _r = ytre.exec(url)
+    if (_r) {
+      let _v = _r[5]
+      const path = `/make/${_v}`
+      this.props.onNavigateTo(path)
+    }
+  }
+
   render() {
     const { browser } = this.props;
     const { videoId } = this.context;
-    const thumbImage = `https://img.youtube.com/vi/${videoId}/3.jpg`
     let _sliders = this.sliderData.map(slider => {
       return <MediaControls ref = { slider.key }
       key = { slider.key }
@@ -250,11 +286,20 @@ class AudioTrack extends Component {
     })
     return (
       <div ref="audioTrack" className="audio-track">
-        <img className="result__image" src={thumbImage}></img>
-        <div className="audio-track__info">
-          <div>{this.state.duration}</div>
+      <div className="youtube__track">
+          <div className="result__image__wrapper">
+            <img className="result__image" src={this.state.thumbImage}></img>
+          </div>
+          <div className="audio-track__info">
+              <div>{this.state.duration}</div>
+          </div>
         </div>
-        {[..._sliders]}
+        <Input
+          ref="qInputSearch"
+          onChange={this.onInputChanged.bind(this)}
+          placeholder={"paste yt url"}
+        />
+          {[..._sliders]}
       </div>
     );
   }
@@ -321,10 +366,15 @@ class AudioTrack extends Component {
 }
 
 export default connect(({ browser, app }) => ({
-  browser,
-  app,
-}), {
-  audioSettingsChanged,
-  audioInfo,
-  audioLoaded,
-})(AudioTrack);
+    browser,
+    app,
+  }),
+  dispatch => {
+    return {
+      audioSettingsChanged:(payload=>(dispatch(audioSettingsChanged(payload)))),
+      audioInfo:(payload=>(dispatch(audioInfo(payload)))),
+      audioLoaded:(payload=>(dispatch(audioLoaded(payload)))),
+      onNavigateTo: (dest) => dispatch(push(dest))
+    };
+  }
+)(AudioTrack);

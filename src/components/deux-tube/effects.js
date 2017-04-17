@@ -168,6 +168,10 @@ export default class DeuxEffects {
     return this.videoEffects.getDataURL(enc, q)
   }
 
+  get pixels(){
+    return this.videoEffects.pixels
+  }
+
 
   get sharedEffects(){
     return this._sharedEffects

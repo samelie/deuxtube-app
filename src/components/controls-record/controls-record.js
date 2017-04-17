@@ -48,7 +48,7 @@ class controlsRecord extends Component {
     let updatedEffect = effects.get('updatedEffect')
     this.setState({
       timeRecorded: (videoRecord.frameCount / Config.FPS).toFixed(1),
-      audioDuration: audio.get('duration').toFixed(1),
+      audioDuration: audio.get('duration'),
       activeEffectName: updatedEffect.title
     })
   }
@@ -86,7 +86,10 @@ class controlsRecord extends Component {
           }}
           text={'SAVE'}
         />
-        <div ref ="sl" className="controls-effects__status">{this.state.activeEffectName}</div>
+        <div ref ="sl" className="controls-effects__status">
+          <div>Effect name:</div>
+          {this.state.activeEffectName}
+        </div>
       </div>
     );
   }

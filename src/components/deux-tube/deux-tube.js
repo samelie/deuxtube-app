@@ -155,9 +155,14 @@ class DeuxTube extends Component {
         //addFrame(_self._effects.imageDataArrayBuffer.buffer)
         //base64
         if (process.env.IS_APP) {
+          const jpeg = _self._effects.getDataURL(RECORDING_FRAME_FMT, RECORDING_FRAME_Q)
           global.recorder.addFrame(
-            _self._effects.getDataURL(RECORDING_FRAME_FMT, RECORDING_FRAME_Q)
+              jpeg
           )
+          /*global.ffmpegrecorder.update(
+            _self._effects.pixels
+          )*/
+          //window.EAPI.renderCanvas(_self._effects.pixels.buffer)
         } else {
           addFrame(_self._effects.getDataURL(RECORDING_FRAME_FMT, RECORDING_FRAME_Q))
         }
@@ -170,7 +175,6 @@ class DeuxTube extends Component {
       raf(tick)
     })
   }
-
 
   render() {
     const { browser } = this.props;

@@ -40,6 +40,8 @@ let strats = [{
   callbackUrl: `http://localhost:${process.env.EXPRESS_PORT}/login/youtube/success`
 }]
 
+console.log(server);
+
 let chewbPassport = new ChewbPassport(
   server.app,
   strats, {

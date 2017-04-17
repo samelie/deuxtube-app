@@ -81,7 +81,6 @@ export default class DeuxTubeAudio {
     return this._audio.load(videoId, segments, options)
       .then(sound => {
         sound.play()
-        console.log("done");
         this._audio.monitor.setSound(sound)
         return sound
       })

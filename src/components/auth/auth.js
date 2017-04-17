@@ -33,6 +33,7 @@ class Auth extends Component {
 
  onInstaAuth() {
   const { instaAuthed } = this.props;
+  console.log(SOCKET_SERVER);
   AuthService.auth(`${SOCKET_SERVER}/login/instagram`)
    .then(authData => {
     instaAuthed(authData)
@@ -68,14 +69,19 @@ class Auth extends Component {
  password stored locally
  */
 
+ /*
+
+  <ActionButton
+              text={'Authorize instagram'}
+              onClick={this.onInstaAuth.bind(this)}
+            />
+ */
+
  _renderYoutubeAuth() {
   if (!this.state.youtubeAuth) {
    return (
     <div className="auth__wrapper">
-          <ActionButton
-              text={'Authorize instagram'}
-              onClick={this.onInstaAuth.bind(this)}
-            />
+
             <ActionButton
               text={'Authorize google'}
               onClick={this.onGoogleAuth.bind(this)}

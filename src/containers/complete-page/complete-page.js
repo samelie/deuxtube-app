@@ -35,19 +35,22 @@ class CompletePage extends Component {
   constructor(props) {
     super(props)
     this.state = {
-
+      youtubeUploadProgress: 0
     }
   }
 
   componentDidMount() {
-    const { app,audio } = this.props
+    const { app, audio } = this.props
     const finalUrl = app.get('finalSave').url
-    console.log(`componentDidMount() ${finalUrl}`);
-    this._fieldStamp = Date.now().toString()
-    this._storeVideo({
-      rawUrl: finalUrl,
-      info: audio.get('info')
-    })
+
+    if(finalUrl){
+      console.log(`componentDidMount() ${finalUrl}`);
+      this._fieldStamp = Date.now().toString()
+      this._storeVideo({
+        rawUrl: finalUrl,
+        info: audio.get('info')
+      })
+    }
   }
 
   _storeVideo(value) {
@@ -90,8 +93,15 @@ class CompletePage extends Component {
   }
 
   uploadVideo() {
-    const { app, audio } = this.props;
-    window.EAPI.onYoutubeUploadProgress = (progress => {})
+    const { app, auth, audio } = this.props;
+
+    const totalByteSize = parseInt(app.get('finalSave').metadata.format.size,10)
+    console.log("totalByteSize",totalByteSize);
+
+    window.EAPI.onYoutubeUploadProgress = (uploadBytes => {
+      console.log(uploadBytes, totalByteSize);
+      this.setState({youtubeUploadProgress: Math.round(uploadBytes/totalByteSize*100)})
+    })
 
     window.EAPI.onYoutubeUploaded = (youtube => {
       const _v = youtube[0]
@@ -101,10 +111,15 @@ class CompletePage extends Component {
       })
     })
 
+
     window.EAPI.sendEvent('youtube-upload', {
       local: app.get('finalSave').local,
       title: this.refs.title.value,
-      description: this.refs.describe.value
+      //privacy: this.refs.privacy.value ? "private" : "public",
+      description: this.refs.describe.value,
+      credentials: {
+        access_token:auth.get('youtube').accessToken
+      }
     })
   }
 
@@ -125,16 +140,28 @@ class CompletePage extends Component {
     return <div></div>
   }
 
+  _renderUploadProgress(){
+    if(this.state.youtubeUploadProgress && !this.state.youtubeObj){
+      return (<div className="complete--upload">{this.state.youtubeUploadProgress}%</div>)
+    }
+    return (<div></div>)
+  }
+
   render() {
-    const { browser, app } = this.props;
+    const { browser,audio, app } = this.props;
+    const videoDuration = parseInt(app.get('finalSave').metadata.streams[0].duration,10)
+    const title = (Math.abs(audio.get('duration') - videoDuration)) < 10 ? audio.get('info').snippet.title : "Title your video"
     return (
       <div  className="o-page complete-page">
+      {this._renderUploadProgress()}
       {this._renderYoutubeEmbed()}
+        <div className="complete--text">Title</div>
         <input
           ref="title"
-          placeholder={`title your video`}
+          placeholder={title}
           className="input"
         ></input>
+        <div className="complete--text">Description</div>
         <input
           ref="describe"
           placeholder={`description for your video`}
@@ -158,8 +185,9 @@ class CompletePage extends Component {
 }
 
 
-export default connect(({ browser, app, audio }) => ({
+export default connect(({ browser, app, auth, audio }) => ({
   browser,
   app,
+  auth,
   audio
 }), mapDispatchToProps)(CompletePage);

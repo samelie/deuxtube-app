@@ -16,13 +16,13 @@ const app = electron.app
 const BrowserWindow = electron.BrowserWindow
 
 ipcMain.on('youtube-upload', (event, arg) => {
-  console.log(arg) // prints "ping"
   let _cred = JSON.parse(fs.readFileSync(path.join(__dirname, 'chewb/ytcreds.json')))
-  Uploader.init(_cred)
+  Uploader.init(_cred, arg.credentials)
     .then(() => {
       let options = {
         credentials: arg.credentials,
         title: arg.title,
+        privacyStatus: arg.privacy,
         description: arg.description
       }
       Uploader.upload([arg.local],
@@ -32,6 +32,10 @@ ipcMain.on('youtube-upload', (event, arg) => {
           event.sender.send('youtube-upload-resp', uploaded)
         })
     })
+  Uploader.on("progress", (val) => {
+    console.log(val);
+    event.sender.send('youtube-upload-progress', val)
+  })
 })
 
 ipcMain.on('reload', (event, arg) => {
@@ -47,24 +51,27 @@ ipcMain.on('videoSaved', (event, arg) => {
   });
 })
 
+ipcMain.on('canvas-render', (event, arg) => {
+  console.log(arg);
+})
 
-let mainWindow
+let mainWindow, commonWindow
 
 /*require('dotenv')
   .config({
     path: path.join(process.cwd(), 'chewb/envvars')
   })*/
 //server
-let server = new Chewb(path.join(__dirname, 'chewb/envvars'))
-  /*let server = exec('node chewb/index.js', { maxBuffer: NaN },
-    (e, stdout, stderr) => {
-      if (e instanceof Error) {
-        console.error(e);
-        throw e;
-      }
-      console.log('stdout ', stdout);
-      console.log('stderr ', stderr);
-    });*/
+//let server = new Chewb(path.join(__dirname, 'chewb/envvars'))
+let server = exec('node chewb/index.js', { maxBuffer: NaN },
+  (e, stdout, stderr) => {
+    if (e instanceof Error) {
+      console.error(e);
+      throw e;
+    }
+    console.log('stdout ', stdout);
+    console.log('stderr ', stderr);
+  });
 
 /*
 server.stdout.on('data', (data) => {
@@ -77,6 +84,10 @@ server.stderr.on('data', (data) => {
 });*/
 
 function createWindow() {
+  commonWindow = new BrowserWindow({ width: 640, height: 360 })
+  commonWindow.loadURL(`file://${__dirname}/dist/output-window.html`);
+
+
   mainWindow = new BrowserWindow({ width: 1200, height: 600 })
 
   //dev
@@ -88,6 +99,7 @@ function createWindow() {
     server.kill()
     mainWindow = null
   })
+
 }
 
 // This method will be called when Electron has finished

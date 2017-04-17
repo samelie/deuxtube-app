@@ -90,9 +90,11 @@ class MakePage extends Component {
             return global.recorder.addFrame(buffer)
           }, { concurrency: 1 })
           .then(r => {
+
             this._recorder.frameBuffers.length = 0
 
             global.recorder.save({
+                google: false,
                 width: VIDEO_WIDTH,
                 height: VIDEO_HEIGHT,
                 withBuffers: false,
@@ -105,13 +107,16 @@ class MakePage extends Component {
               })
               .then(obj => {
                 //???? dunno
-                let { url, name } = obj.url
-                let { local } = obj
+                let { local, url, name } = obj
 
                 EAPI.videoSaved(local)
 
                 window.EAPI.onVideoSaved = (newSave) => {
-                  dispatch(exportUrl({ url: url, local: newSave }))
+                  dispatch(exportUrl({
+                    url: url,
+                    local: newSave,
+                    metadata: obj.metadata
+                  }))
                   const path = `/wow/${name}`
                   dispatch(push(path));
                 }
@@ -267,13 +272,11 @@ class MakePage extends Component {
               <DeuxTube addFrame={this._addFrame.bind(this)}/>
               <Playbar addFrame={this._addFrame.bind(this)}/>
               <PlaylistControls/>
-              <Social/>
-            </div>
-            <div className="make--media">
-
-              {this._renderVideoPlaylist()}
               {this._renderVideoQueryResults()}
               {this._renderMakeStatus()}
+            </div>
+            <div className="make--media">
+              {this._renderVideoPlaylist()}
             </div>
           </div>
           <div className="make--effectsblock">

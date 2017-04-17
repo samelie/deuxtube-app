@@ -33,7 +33,7 @@ class LandingPage extends Component {
     super(props)
     this.state = {
       ready: false,
-      user:false,
+      youtube:false,
       bgImageStyle: {
         //background: `url(${process.env.REMOTE_ASSETS_DIR}images/dog.jpg) no-repeat center center fixed`,
       }
@@ -45,10 +45,10 @@ class LandingPage extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const {app} = nextProps
-    let user = app.get('user')
-    if(user){
-      this.setState({user:user})
+    const {auth} = nextProps
+    let youtube = auth.get('youtube')
+    if(youtube){
+      this.setState({youtube:youtube})
     }
   }
 
@@ -66,23 +66,29 @@ class LandingPage extends Component {
   }
 
   onStart() {
-    let v = this._url || "https://www.youtube.com/watch?v=jbGTggv8IEI"
+    let v = this._url || "https://www.youtube.com/watch?v=DNWS6QoYR1Q"
     this._parseAndNavigate(v)
   }
 
   _renderTrackForm(){
-    if(this.state.user){
+    if(this.state.youtube){
       return (<AudioTrackForm/>)
     }
     return <div></div>
   }
 
+ _renderAuth(){
+    if(!this.state.youtube){
+      return (<Auth />)
+    }
+    return <div></div>
+  }
   render() {
     const { browser } = this.props;
     return (
       <div className="o-page landing">
-        <Auth />
-        <LoginForm />
+      {this._renderAuth()}
+
         {this._renderTrackForm()}
       </div>
     );
@@ -90,7 +96,8 @@ class LandingPage extends Component {
 }
 
 
-export default connect(({ browser,app }) => ({
+export default connect(({ browser,auth,app }) => ({
   browser,
+  auth,
   app,
 }), mapDispatchToProps)(LandingPage);
