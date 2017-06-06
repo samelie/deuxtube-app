@@ -33,7 +33,7 @@ class LandingPage extends Component {
     super(props)
     this.state = {
       ready: false,
-      youtube:false,
+      youtube: false,
       bgImageStyle: {
         //background: `url(${process.env.REMOTE_ASSETS_DIR}images/dog.jpg) no-repeat center center fixed`,
       }
@@ -42,13 +42,25 @@ class LandingPage extends Component {
 
   componentDidMount() {
     this._ytre = /(youtu\.be\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v)\/))([^\?&"'>]+)/
+    let i;
+    window.EAPI.onIsReady = (isReady => {
+      this.setState({ ready: isReady })
+      console.log(isReady);
+      if (isReady) {
+        clearInterval(i)
+      }
+    })
+
+    i = setInterval(() => {
+      window.EAPI.sendEvent('is-ready')
+    }, 100)
   }
 
   componentWillReceiveProps(nextProps) {
-    const {auth} = nextProps
+    const { auth } = nextProps
     let youtube = auth.get('youtube')
-    if(youtube){
-      this.setState({youtube:youtube})
+    if (youtube) {
+      this.setState({ youtube: youtube })
     }
   }
 
@@ -70,15 +82,17 @@ class LandingPage extends Component {
     this._parseAndNavigate(v)
   }
 
-  _renderTrackForm(){
-    if(this.state.youtube){
+  _renderTrackForm() {
+    if (this.state.youtube && this.state.ready) {
       return (<AudioTrackForm/>)
+    }else if(this.state.youtube && !this.state.ready){
+      return <div className="">Updating capabilities</div>
     }
-    return <div></div>
+    return null
   }
 
- _renderAuth(){
-    if(!this.state.youtube){
+  _renderAuth() {
+    if (!this.state.youtube) {
       return (<Auth />)
     }
     return <div></div>
@@ -88,15 +102,14 @@ class LandingPage extends Component {
     return (
       <div className="o-page landing">
       {this._renderAuth()}
-
-        {this._renderTrackForm()}
+      {this._renderTrackForm()}
       </div>
     );
   }
 }
 
 
-export default connect(({ browser,auth,app }) => ({
+export default connect(({ browser, auth, app }) => ({
   browser,
   auth,
   app,

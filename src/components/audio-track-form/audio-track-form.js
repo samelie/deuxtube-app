@@ -1,4 +1,4 @@
-//import './landing-page.scss';
+import './audio-track-form.scss';
 
 import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
@@ -61,7 +61,7 @@ class AudioTrackForm extends Component {
   }
 
   onStart() {
-    let v = this._url || "https://www.youtube.com/watch?v=DNWS6QoYR1Q"
+    let v = this._url
     this._parseAndNavigate(v)
   }
 
@@ -69,11 +69,14 @@ class AudioTrackForm extends Component {
     const { browser } = this.props;
     return (
       <div className="audio-track-form">
+      <div className="u-font-small">Songs only: </div>
       <Input
+        className="audio-track-form--item"
         onChange={this.onInputChanged.bind(this)}
         placeholder={"paste youtube url here"}
       />
       <ActionButton
+          className="audio-track-form--item"
           text={'GO'}
           onClick={this.onStart.bind(this)}
         />

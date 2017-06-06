@@ -18,6 +18,8 @@ import {
   VIDEO_HEIGHT,
 } from '../../constants/config';
 
+const DESCCLIAMER = "Made with Deux-tube app with youtube content. http://rad.wtf"
+
 const mapDispatchToProps = dispatch => {
   return {
     onNavigateTo(dest) {
@@ -94,7 +96,7 @@ class CompletePage extends Component {
 
   uploadVideo() {
     const { app, auth, audio } = this.props;
-
+    console.log(audio.get('info'));
     const totalByteSize = parseInt(app.get('finalSave').metadata.format.size,10)
     console.log("totalByteSize",totalByteSize);
 
@@ -111,12 +113,22 @@ class CompletePage extends Component {
       })
     })
 
-
+    console.log(audio.get('track'));
+    console.log(audio.get('duration'));
+    const userTitle = this.refs.title.value
+    const userDesc = this.refs.describe.value
+    const title = userTitle === "" ? audio.get('info').snippet.title : userTitle
+    console.log(title);
+    console.log(audio.get('info'));
     window.EAPI.sendEvent('youtube-upload', {
       local: app.get('finalSave').local,
-      title: this.refs.title.value,
+      title: title,
       //privacy: this.refs.privacy.value ? "private" : "public",
-      description: this.refs.describe.value,
+      description: `
+      ${userDesc}
+      ${DESCCLIAMER}
+      Using the audio track from ${audio.get('info').id}
+      `,
       credentials: {
         access_token:auth.get('youtube').accessToken
       }
@@ -155,25 +167,25 @@ class CompletePage extends Component {
       <div  className="o-page complete-page">
       {this._renderUploadProgress()}
       {this._renderYoutubeEmbed()}
-        <div className="complete--text">Title</div>
+        <div className="complete--text u-text-small u-underline">Title</div>
         <input
           ref="title"
           placeholder={title}
-          className="input"
+          className="input u-bottom-margin"
         ></input>
-        <div className="complete--text">Description</div>
+        <div className="complete--text u-text-small u-underline">Description</div>
         <input
           ref="describe"
           placeholder={`description for your video`}
-          className="input"
+          className="input u-bottom-margin"
         ></input>
-        <ActionButton
-          text={'Show in finder'}
-          onClick={this.showInFinder.bind(this)}
-        />
         <ActionButton
           text={'Share on youtube'}
           onClick={this.uploadVideo.bind(this)}
+        />
+        <ActionButton
+          text={'Show in finder'}
+          onClick={this.showInFinder.bind(this)}
         />
         <ActionButton
           text={'Make another'}

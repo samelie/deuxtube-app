@@ -1,10 +1,15 @@
+@import 'fonts';
 .input{
   position: relative;
-  font-weight: bolder;
+  font-weight: 700;
+
+  font-size: $fs-base;
   max-width: 100%;
-   background:    url('/assets/images/input.png');
+   background:    url('/assets/images/input2.png');
     background-size:     cover;
     background-repeat:   no-repeat;
     background-position: center center;
     border:none;
+
+    box-shadow: 1px 1px 1px black;
 }

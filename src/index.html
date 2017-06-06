@@ -22,10 +22,11 @@
     <script>
     if (typeof require != 'undefined') {
         var path = require('path');
-        require(path.join(process.cwd(), './dist/assets/js/renderer.js'))
-        global.recorder = require(path.join(process.cwd(), './dist/assets/js/recorder.js'))()
+        require(path.join(process.cwd(), 'dist/assets/js/renderer.js'))
+        global.recorder = require(path.join(process.cwd(), 'dist/assets/js/recorder.js'))()
 
-        global.ffmpegrecorder = require(path.join(process.cwd(), './dist/assets/js/ffmpeg-recorder.js'))()
+        global.ffmpegrecorder = require(
+          path.join(process.cwd(), 'dist/assets/js/ffmpeg-recorder.js'))()
 
         global.ffmpegrecorder.start({output:'test.mp4', format:'mp4'})
     }else{

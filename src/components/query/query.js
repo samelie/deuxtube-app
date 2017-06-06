@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 
-import YoutubeSocket from '@samelie/dash-player-youtube-socket'
+import YoutubeSocket from 'chewb-dash-player-youtube-socket'
 import Socket from '../../utils/socket';
 import SearchResult from './searchResult'
 import Emitter from '../../utils/emitter'

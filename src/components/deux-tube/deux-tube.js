@@ -69,9 +69,21 @@ class DeuxTube extends Component {
       !Number.isInteger(_value)) {
       _value = Math.floor(nextEffects.get('totalBlendModes') * _value)
     }
-    //is an effect uniform
-    if (updatedEffect.isUniform) {
 
+    if (nextEffects !== this.props.effects) {
+      _.forIn(nextEffects.toObject(), (group) => {
+        _.forIn(group, (effect) => {
+          this._updateSingleEffect(effect, effect.value, videoState)
+        })
+      })
+    }
+    //is an effect uniform
+    this._updateSingleEffect(updatedEffect,_value, videoState)
+
+  }
+
+  _updateSingleEffect(updatedEffect,value, videoState) {
+    if (updatedEffect.isUniform) {
       //color
       if (this._effects.sharedEffects
         .indexOf(updatedEffect.key) > -1) {
@@ -81,19 +93,17 @@ class DeuxTube extends Component {
             let _suffix = TRACK_EFFECT_SUFFIX[index]
             this._effects.changedValue(
               `${updatedEffect.key}${_suffix}`,
-              _value
+              value
             )
           })
       } else {
         this._effects.changedValue(
           updatedEffect.key,
-          _value
+          value
         )
       }
     }
   }
-
-
 
   _setEffectUniforms() {
     let { effects } = this.props
@@ -146,11 +156,13 @@ class DeuxTube extends Component {
     })
 
     raf.cancel(this._rafHandle)
-    let _rc = 0
     let _frameCount = 0
+    let time = 0
+
     this._rafHandle = raf(function tick() {
       //30fps
-      if (_rc % 2 === 0 && _self.state.recording) {
+      const ctime = performance.now()
+      if(ctime - time >= 30 && _self.state.recording){
         //buffer
         //addFrame(_self._effects.imageDataArrayBuffer.buffer)
         //base64
@@ -158,20 +170,20 @@ class DeuxTube extends Component {
           const jpeg = _self._effects.getDataURL(RECORDING_FRAME_FMT, RECORDING_FRAME_Q)
           global.recorder.addFrame(
               jpeg
-          )
-          /*global.ffmpegrecorder.update(
-            _self._effects.pixels
-          )*/
-          //window.EAPI.renderCanvas(_self._effects.pixels.buffer)
+            )
+            /*global.ffmpegrecorder.update(
+              _self._effects.pixels
+            )*/
+            //window.EAPI.renderCanvas(_self._effects.pixels.buffer)
         } else {
           addFrame(_self._effects.getDataURL(RECORDING_FRAME_FMT, RECORDING_FRAME_Q))
         }
         _frameCount++;
         update(_frameCount)
+        time = ctime
           //window.EAPI.sendEvent('record-frame', _self._effects.getDataURL('image/png'))
           //global.recorder.addFrame(_self._effects.getDataURL('image/png'))
       }
-      _rc++
       raf(tick)
     })
   }
@@ -181,6 +193,7 @@ class DeuxTube extends Component {
     if (!this.state.ready) {
       return (
         <div ref="deuxTube" className="deux-tube">
+          <img className="deux-tube--bg" src="/assets/images/player-bg.png"></img>
           <canvas ref="output" className="output-canvas"></canvas>
           <canvas ref="gl" className="gl-canvas"></canvas>
         </div>

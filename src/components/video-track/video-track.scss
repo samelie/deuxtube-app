@@ -16,3 +16,12 @@
 
     }
 }
+
+.video-track--bg{
+  position: absolute;
+  left:-10px;
+  top:-10px;
+  width: 140px;
+  height: 110px;
+  pointer-events:none;
+}

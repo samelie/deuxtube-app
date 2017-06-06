@@ -12,3 +12,8 @@ frontend/dist/assets/images
 frontend/dist/assets/json
 frontend/dist/assets/svg
 docs
+
+DeuxTube-darwin-x64*
+dist/bundle*
+dist/css/
+chewb/bundle.js

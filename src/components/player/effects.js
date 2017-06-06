@@ -1,6 +1,6 @@
 import GUI from './GUI';
 import _ from 'lodash'
-//import VideoEffects from '@samelie/video-effects'
+import VideoEffects from 'chewb-video-effects'
 import EaseNumbers from '../../utils/easeNumbers'
 let _o = {
   texture: {

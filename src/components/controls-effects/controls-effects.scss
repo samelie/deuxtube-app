@@ -34,6 +34,7 @@
     position: relative;
     height: 100%;
     width: 100%;
+    padding-top: 2px;
     padding-left: 8px;
     padding-right: 8px;
     margin-bottom: 10px;
@@ -42,7 +43,19 @@
 
   &__blend{
     position: relative;
+    width: 100px;
+    pointer-events: none;
   }
+}
+
+.sketch-picker{
+    max-height: 100%;
+    max-width: 100px;
+    background: rgba(255, 255, 255, 0.0) !important;
+}
+
+.sketch-colour{
+
 }
 
 .controls-slider{

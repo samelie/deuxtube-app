@@ -1,10 +1,10 @@
-let Y = require('@samelie/youtube-audio').default
+import YoutubeAudio from 'chewb-youtube-audio';
 import Signals from 'signals';
 
 export default class DeuxTubeAudio {
 
   constructor(IO) {
-    this._audio = new Y(IO)
+    this._audio = new YoutubeAudio(IO)
     this._bufferChunks = []
 
     const onAmp = (v) => {

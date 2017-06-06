@@ -58,11 +58,11 @@ class Playbar extends Component {
    }
   }
 
-  this._startIncreSeekTime(keyboard)
+  //this._startIncreSeekTime(keyboard)
 
   //avoid circ recursion
   if (!this.state.updating) {
-   this._processKeyboard(keyboard, playbar)
+   //this._processKeyboard(keyboard, playbar)
   }
  }
 

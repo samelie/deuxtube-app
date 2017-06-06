@@ -13,7 +13,7 @@ export function keyDown(payload = {}) {
 
 export function keyUp(payload = {}) {
   return {
-    type: KEYBOARD_DOWN,
+    type: KEYBOARD_UP,
     payload: payload
   };
 }

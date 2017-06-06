@@ -11,6 +11,10 @@ import {
   audioLoaded
 } from '../../actions/audio';
 
+import {
+  setError,
+} from '../../actions/error';
+
 import loop from 'raf-loop'
 import raf from 'raf';
 import Workers from '../../utils/workers';
@@ -133,14 +137,15 @@ class AudioTrack extends Component {
         this.setState({
           ...this.state,
           totalDuration: sound.duration.toFixed(1),
-          duration: `${sound.duration.toFixed(1)} seconds`
+          duration: `${sound.duration.toFixed(1)}`
         })
         this._startUpdate()
         audioLoaded({ duration: sound.duration.toFixed(1) })
       })
       .catch(err => {
+        console.log("Error");
         this.setState({ thumbImage: `https://s.ytimg.com/yts/img/meh7-vflGevej7.png` })
-        console.log(err);
+        this.props.setError("Sometimes the track fails to load. \n Quit and relaunch program.")
       })
 
     this.audio.onPeakSignal.add(peak => {
@@ -291,18 +296,25 @@ class AudioTrack extends Component {
             <img className="result__image" src={this.state.thumbImage}></img>
           </div>
           <div className="audio-track__info">
-              <div>{this.state.duration}</div>
+            <div>
+              <span>{this.state.duration}</span>
+              <span className="u-text-small">seconds</span>
+            </div>
           </div>
         </div>
-        <Input
-          ref="qInputSearch"
-          onChange={this.onInputChanged.bind(this)}
-          placeholder={"paste yt url"}
-        />
+
           {[..._sliders]}
       </div>
     );
   }
+
+  /*
+<Input
+          ref="qInputSearch"
+          onChange={this.onInputChanged.bind(this)}
+          placeholder={"paste yt url"}
+        />
+  */
 
   //**************
   //API
@@ -371,6 +383,7 @@ export default connect(({ browser, app }) => ({
   }),
   dispatch => {
     return {
+      setError:(payload=>(dispatch(setError(payload)))),
       audioSettingsChanged:(payload=>(dispatch(audioSettingsChanged(payload)))),
       audioInfo:(payload=>(dispatch(audioInfo(payload)))),
       audioLoaded:(payload=>(dispatch(audioLoaded(payload)))),

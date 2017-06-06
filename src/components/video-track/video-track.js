@@ -28,7 +28,7 @@ import {
   PLAYBAR_SET_CURRENT_TIME,
 } from '../../constants/action-types';
 
-const smallImageUrl = (id) => (`https://img.youtube.com/vi/${id}/3.jpg`, )
+const smallImageUrl = (id) => (`https://img.youtube.com/vi/${id}/3.jpg`)
 
 class AudioTrack extends Component {
 
@@ -337,6 +337,7 @@ class AudioTrack extends Component {
     //<div>{this.state.currentVideo.title}</div>
     return (
       <div ref="videoTrack" className="video-track">
+        <img className="video-track--bg" src="/assets/images/poster-bg.png"></img>
         <div className="video-track__playing">
           <div ref="videoTrackWrapper" className="playing__wrapper">
             <img src={smallImageUrl(this.state.currentVideo.videoId)}></img>
@@ -349,9 +350,10 @@ class AudioTrack extends Component {
         {[..._sliders]}
         <QueryInput
           id={id}
+          rows="2"
           tabIndex="-1"
           className="input-query"
-          placeholder={`Paste video or playlist url`}
+          placeholder={`Search, video/playlist url`}
           onQueryResponse={this.onInputQuery.bind(this)}
         />
         <Instruction

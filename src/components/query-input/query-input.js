@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 
-import YoutubeSocket from '@samelie/dash-player-youtube-socket'
+import YoutubeSocket from 'chewb-dash-player-youtube-socket'
 import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter'
 
@@ -134,6 +134,7 @@ class QueryInput extends Component {
     return (
       <input
        tabIndex="-1"
+       rows={this.props.rows || 1}
        ref="input"
        className="input"
       ></input>

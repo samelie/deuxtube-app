@@ -1,4 +1,4 @@
-const DASHSAVE = require('@samelie/mp4-dash-record');
+const DASHSAVE = require('mp4-dash-record');
 const uuid = require('uuid');
 const path = require('path');
 const fs = require('fs');
@@ -9,7 +9,7 @@ const tmp = require('tmp');
 
 module.exports = function UserRecord() {
 
-  const _recorder = new DASHSAVE()
+  const _recorder = new DASHSAVE({ffmpegPath:'./bin/ffmpeg'})
   const _saveHash = uuid.v4()
   let saveDirectory
   tmp.dir((err, dir, cleanupCallback) => {

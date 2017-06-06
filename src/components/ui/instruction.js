@@ -46,6 +46,8 @@ class Instruction extends Component {
       }}
       >
       {text}
+      <div className="u-underline u-text-small"
+      >close</div>
     </div>
     )
   }

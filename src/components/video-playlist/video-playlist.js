@@ -15,6 +15,7 @@ import Emitter from '../../utils/emitter';
 import Keys from '../../utils/keys';
 import Keyboard from '../../utils/keyboard';
 
+
 class VideoPlaylist extends Component {
 
   static contextTypes = {
@@ -82,6 +83,7 @@ class VideoPlaylist extends Component {
       className={`video-playlist ${className}`}
       >
         {[..._items]}
+
       </div>
     );
   }

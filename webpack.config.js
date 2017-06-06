@@ -21,7 +21,7 @@ const CSS_LOADERS = {
   scss: '!sass-loader'
 };
 
-const ASSETS_DIR = "https://storage.googleapis.com/samrad-adddog/www-assets/assets/"
+const ASSETS_DIR = "https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/"
 
 const ENV_VARS = {
   //SOCKET_SERVER: '"http://0.0.0.0:8080"',
@@ -29,8 +29,8 @@ const ENV_VARS = {
   //SOCKET_SERVER: '"https://rad.wtf/chewb"',
   //APP_HOST: '"https://add.dog/"',
   APP_DOMAIN: '"/"',
-  ASSETS_DIR: '"https://storage.googleapis.com/samrad-adddog/www-assets/assets/"',
-  REMOTE_ASSETS_DIR: '"https://storage.googleapis.com/samrad-adddog/www-assets/assets/"'
+  ASSETS_DIR: '"https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/"',
+  REMOTE_ASSETS_DIR: '"https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/"'
 }
 
 
@@ -51,7 +51,7 @@ module.exports = env => {
     let _l = Object.keys(CSS_LOADERS).map(ext => {
       const prefix = 'css-loader?-minimize!postcss-loader';
       const extLoaders = prefix + CSS_LOADERS[ext];
-      const loader = isDev ? `style-loader!${extLoaders}` : ExtractTextPlugin.extract('style-loader', extLoaders);
+      const loader = isDev ? `style-loader!${extLoaders}` : ExtractTextPlugin.extract({ use: `${extLoaders}` })
       return {
         loader,
         test: new RegExp(`\\.(${ext})$`),
@@ -68,8 +68,8 @@ module.exports = env => {
     },
     output: {
       filename: 'bundle.[name].[chunkhash].js',
-      path: constants.DIST,
-      publicPath:"/",
+      path: resolve(__dirname, constants.DIST),
+      publicPath: "/",
       pathinfo: !env.prod,
     },
     context: constants.SRC_DIR,
@@ -81,18 +81,18 @@ module.exports = env => {
       stats: {
         colors: true
       },
-      contentBase: constants.SRC_DIR,
+      contentBase: resolve(__dirname, constants.DIST),
       historyApiFallback: !!env.dev,
       port: 8081
     },
     bail: env.prod,
     resolve: {
-      extensions: ['', '.js', '.jsx']
+      extensions: ['.js', '.jsx']
     },
     module: {
       loaders: [{
           test: /\.svg$/,
-          loader: 'svg-inline'
+          loader: 'svg-inline-loader'
         }, {
           loader: 'url-loader?limit=100000',
           test: /\.(gif|jpg|png)$/
@@ -102,14 +102,14 @@ module.exports = env => {
           include: [`${join(constants.ASSETS_DIR, '/font/')}`]
         }, {
           test: /\.json$/,
-          loader: 'json'
+          loader: 'json-loader'
         }, {
           test: /\.(js|jsx)$/,
-          loader: 'babel',
+          loader: 'babel-loader',
           exclude: /node_modules(?!\/dis-gui)/
         }, {
           test: /\.(glsl|vert|frag)$/,
-          loader: 'shader',
+          loader: 'shader-loader',
           exclude: /node_modules/
         }
         /*, {
@@ -118,13 +118,6 @@ module.exports = env => {
                 loader: "style-loader!css-loader!postcss-loader?pack=cleaner"
               }*/
       ].concat(stylesLoaders()),
-    },
-    sassLoader: {
-      assetsUrl: `"${ASSETS_DIR}"`,
-      includePaths: [
-        join(constants.SRC_DIR, '/base'),
-        join(constants.SRC_DIR, '/base/vars')
-      ],
     },
     plugins: removeEmpty([
       new webpack.DefinePlugin({
@@ -137,10 +130,7 @@ module.exports = env => {
         assetsUrl: `"${ASSETS_DIR}`,
         template: './index.ejs', // Load a custom template (ejs by default see the FAQ for details)
       })),
-      ifProd(new ExtractTextPlugin('[name]-[hash].css', {
-        allChunks: true
-      })),
-      ifProd(new webpack.optimize.DedupePlugin()),
+      ifProd(new ExtractTextPlugin({ filename: 'css/[name].css', disable: false, allChunks: true })),
       ifProd(new webpack.LoaderOptionsPlugin({
         minimize: true,
         debug: false,
@@ -149,29 +139,44 @@ module.exports = env => {
       // saves 65 kB with Uglify!! Saves 38 kB without
       DefineENV,
       // saves 711 kB!!
-      ifProd(new webpack.optimize.UglifyJsPlugin({
+      /*ifProd(new webpack.optimize.UglifyJsPlugin({
         compress: {
           screw_ie8: true, // eslint-disable-line
           warnings: false,
         },
-      })),
+      })),*/
       ifNotTest(new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor'
       })),
       ifNotTest(new webpack.optimize.CommonsChunkPlugin({
         name: 'common',
         fileName: 'bundle.common.js'
-      }))
-    ]),
-    postcss: () => [
-      autoprefixer({
-        browsers: [
-          'last 2 versions',
-          'iOS >= 8',
-          'Safari >= 8',
-        ]
+      })),
+      new webpack.LoaderOptionsPlugin({
+        options: {
+          postcss: () => [
+            autoprefixer({
+              browsers: [
+                'last 2 versions',
+                'iOS >= 8',
+                'Safari >= 8',
+              ]
+            }),
+            postcssEasings
+          ],
+        }
       }),
-      postcssEasings
-    ],
+      new webpack.LoaderOptionsPlugin({
+        options: {
+          sassLoader: {
+            assetsUrl: `"${ASSETS_DIR}"`,
+            includePaths: [
+              join(constants.SRC_DIR, '/base'),
+              join(constants.SRC_DIR, '/base/vars')
+            ],
+          },
+        }
+      })
+    ]),
   }
 }

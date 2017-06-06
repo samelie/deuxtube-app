@@ -6,7 +6,7 @@ import { push } from 'react-router-redux';
 
 import React, { Component, PropTypes } from 'react';
 import createFragment from 'react-addons-create-fragment'
-import DashRecorder from '@samelie/dash-player-recorder'
+import DashRecorder from 'chewb-dash-player-recorder'
 
 import Q from 'bluebird';
 import { Link } from 'react-router';
@@ -29,7 +29,9 @@ import DeuxTube from '../../components/deux-tube/deux-tube';
 import Playbar from '../../components/playbar/playbar';
 import PlaylistControls from '../../components/playlist-controls/playlist-controls';
 import Social from '../../components/social/social';
+import ErrorComp from '../../components/error/error';
 import MakeStatus from '../../components/make-status/make-status';
+import Instruction from '../../components/ui/instruction'
 
 import {
   VIDEO_WIDTH,
@@ -56,7 +58,8 @@ class MakePage extends Component {
     this.state = {
       bgImageStyle: {
         //background: `url(${process.env.REMOTE_ASSETS_DIR}images/dog.jpg) no-repeat center center fixed`,
-      }
+      },
+      playlistInstructionAccessed: false
     }
 
     this._recorderProp = {
@@ -195,19 +198,6 @@ class MakePage extends Component {
     this._recorder.addFrame(buffer)
   }
 
-  //<Controls/>
-  //<Player/>
-  //<Query/>
-  /*
-  <div className="make__tube">
-          <div className="youtube__query">
-
-          </div>
-          <div className="deuxtube__playlist">
-          </div>
-        </div>
-  */
-
   _renderVideoPlaylist() {
     const { playlists } = this.props;
     let i = -1
@@ -261,11 +251,20 @@ class MakePage extends Component {
     })
   }
 
+  _renderInstrcutions(){
+    const { playlists } = this.props;
+    if(!playlists.size) return null
+    return (<Instruction
+                text={`Click to reorder. \n Shift-click to remove.`}
+                instructionAccessed={this.state.playlistInstructionAccessed}
+                className={'playlist-track'}
+              />)
+  }
+
   render() {
     const { browser, params } = this.props;
     return (
       <div ref="make" style={this.state.bgImageStyle} className="o-page make make--interactive">
-
         <div className="u-page--col--big">
           <div className="make--playerblock">
             <div className="make--video">
@@ -277,6 +276,7 @@ class MakePage extends Component {
             </div>
             <div className="make--media">
               {this._renderVideoPlaylist()}
+              {this._renderInstrcutions()}
             </div>
           </div>
           <div className="make--effectsblock">
@@ -294,6 +294,7 @@ class MakePage extends Component {
               </div>
           </div>
         </div>
+        <ErrorComp/>
       </div>
     );
   }

@@ -40,10 +40,7 @@ class ControlsEffectsBlend extends Component {
     let updatedEffect = effects.get('updatedEffect')
     if (updatedEffect.key === 'uBlendMode') {
       //from the mousepad
-      let _index = updatedEffect.value;
-      if(!Number.isInteger(_index)) {
-        _index = Math.floor(this.state.modes.length * updatedEffect.value)
-      }
+      let _index = Math.floor(updatedEffect.value)
       let _e = this.state.modes[_index]
       this.setState({
         active: {
@@ -57,7 +54,7 @@ class ControlsEffectsBlend extends Component {
     const { modes, modeChanged } = this.props
 
     return (
-      <div className="controls-effects__blend">
+      <div className="controls-effects__blend u-font-xsmall">
           <div>{this.state.active.name}</div>
       </div>
     )

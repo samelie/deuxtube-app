@@ -32,9 +32,17 @@ const initialState = new Map()
    slider: {
     defaultValue: 0,
     min: 0,
-    max: 1,
+    max: 0.9999,
     step: 0.0001,
    },
+  },
+  'uKeyColor': {
+   key: 'uKeyColor',
+   title: 'uKeyColor',
+   selected: false,
+   isUniform: true,
+   type: 'vec3',
+   value: [0.,0.,0.],
   },
   'uThreshold': {
    key: 'uThreshold',
@@ -47,7 +55,7 @@ const initialState = new Map()
    slider: {
     defaultValue: 0.8,
     min: 0,
-    max: 1,
+    max: 0.9999,
     step: 0.0001,
    },
   },
@@ -68,7 +76,7 @@ const initialState = new Map()
   }
  })
  .set('blend', {
-  'uBlendOpacity': {
+  /*'uBlendOpacity': {
    key: 'uBlendOpacity',
    title: 'uBlendOpacity',
    selected: false,
@@ -82,7 +90,7 @@ const initialState = new Map()
     max: 1,
     step: 0.0001,
    },
-  },
+  },*/
   'uBlendMix': {
    key: 'uBlendMix',
    title: 'uBlendMix',
@@ -283,7 +291,7 @@ const initialState = new Map()
    slider: {
     defaultValue: 0,
     min: 0,
-    max: 4,
+    max: 6,
     step: 0.0001,
    },
   },

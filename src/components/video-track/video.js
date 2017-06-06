@@ -1,4 +1,4 @@
-import { Player, Controller } from '@samelie/dash-player'
+import { Player, Controller } from 'chewb-dash-player'
 import _ from 'lodash'
 export default class DeuxPlayer {
 

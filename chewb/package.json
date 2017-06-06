@@ -1,11 +1,14 @@
 {
-  "name": "deux-chewb",
-  "version": "1.0.0",
-  "main": "main.js",
+  "main": "index.js",
   "private": true,
   "dependencies": {
-    "@samelie/chewb-passport": "git://github.com/samradical/chewb-passport.git",
-    "dotenv": "^4.0.0"
+    "chewb-passport": "^0.0.1",
+    "chewb-server": "^0.0.1",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.3"
   },
-  "scripts": {}
+  "scripts": {
+    "start": "node index.js"
+  },
+  "devDependencies": {}
 }

@@ -5,8 +5,6 @@ import { Link } from 'react-router';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 
-import YoutubeSocket from '@samelie/dash-player-youtube-socket'
-import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter'
 
 //first
@@ -45,10 +43,11 @@ class Input extends Component {
 
   render() {
     const { browser } = this.props;
+    const c = this.props.className || ""
     return (
       <input
        ref="input"
-       className="input"
+       className={`input ${c}`}
       ></input>
     );
   }

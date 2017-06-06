@@ -1,11 +1,28 @@
+@import 'fonts';
+@import 'colors';
 .instruction{
   position: absolute;
+  font-size: $fs-desc;
   top:50%;
   transform:translateX(-100%) translateY(-50%);
   background-color: rgba(230,230,230,0.5);
+
+  cursor: pointer;
 
   &.accessed{
     visibility: hidden;
     opacity: 0;
   }
+
+  &:hover{
+    background-color: rgba(100,230,100,0.5);
+  }
+
+  transition: background-color 0.3s;
+}
+
+
+.playlist-track{
+  top:0;
+  transform: none;
 }

@@ -12,6 +12,7 @@ import { record, save } from '../../actions/app';
 import BasicButton from '../ui/basic-button';
 
 import Config from '../../utils/config'
+import ControlsPresets from '../controls-presets/controls-presets'
 
 const VERBOSE = false
 
@@ -74,10 +75,12 @@ class controlsRecord extends Component {
             this.setState({recording:_r})
             //this._onRecord(_r)
           }}
+          classes={'record-btn'}
           text={'RECORD'}
         />
         <div className="controls-record__time">
-          {this.state.timeRecorded} / {this.state.audioDuration}
+          <span>{this.state.timeRecorded} / {this.state.audioDuration}</span>
+          <span className="u-text-small">secs</span>
         </div>
 
         <BasicButton
@@ -87,8 +90,8 @@ class controlsRecord extends Component {
           text={'SAVE'}
         />
         <div ref ="sl" className="controls-effects__status">
-          <div>Effect name:</div>
-          {this.state.activeEffectName}
+          <div className="u-text-xsmall u-underline u-oneline">Effect name:</div>
+          <div className="u-text-small">{this.state.activeEffectName}</div>
         </div>
       </div>
     );

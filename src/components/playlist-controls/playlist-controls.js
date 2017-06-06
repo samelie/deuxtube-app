@@ -1,3 +1,4 @@
+import './playlist-controls.scss';
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import _ from 'lodash';
@@ -52,12 +53,14 @@ class PlaylistControls extends Component {
       onClick={()=>{
         playlistPreviousVideo()
       }}
+      className="playlist-controls--button"
       text={'PREVIOUS VIDEO'}
     />
     <BasicButton
       onClick={()=>{
         playlistNextVideo()
       }}
+      className="playlist-controls--button"
       text={'NEXT VIDEO'}
     />
     </div>

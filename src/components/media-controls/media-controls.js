@@ -47,7 +47,7 @@ class MediaControls extends Component {
       _comp = <Rcslider ref="slider"  {...slider} value={sliderValue}/>
     }
     return (
-      <div ref="mediaControls" className="media-controls">
+      <div ref="mediaControls" className="media-controls u-text-small u-underline">
         <div>{this.props.title}</div>
         {_comp}
       </div>

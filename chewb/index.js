@@ -1,13 +1,19 @@
 const path = require('path')
 
+
 const ENVS = path.join(__dirname, 'envvars')
 
-console.log(ENVS);
-
 require('dotenv').config({ path: ENVS })
-const Chewb = require('@samelie/chewb')
-const ChewbPassport = require('@samelie/chewb-passport')
+
+const Chewb = require('chewb-server')
+const ChewbPassport = require('chewb-passport')
 let server = new Chewb(ENVS)
+
+const YoutubeDlPath = require('./update-youtubedl')()
+.then(youtubeDl=>{
+  console.log("youtubeDl", youtubeDl);
+  server.sidx.setYoutubeDLPath(youtubeDl)
+})
 
 let strats = [{
   name: 'facebook',
@@ -39,8 +45,6 @@ let strats = [{
   redirectUrl: '/login/youtube/return',
   callbackUrl: `http://localhost:${process.env.EXPRESS_PORT}/login/youtube/success`
 }]
-
-console.log(server);
 
 let chewbPassport = new ChewbPassport(
   server.app,

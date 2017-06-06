@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactHtmlParser from 'react-html-parser';
 
-const smallImageUrl = (id) => (`https://img.youtube.com/vi/${id}/3.jpg`, )
+const smallImageUrl = (id) => (`https://img.youtube.com/vi/${id}/3.jpg`)
 
 const ITEM = (props) => {
   return (

@@ -13,11 +13,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-button {
-  // scss-lint:disable all
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  // scss-lint:enable all
+#app{
+ position: relative;
+  width: 100vw;
+  height: 100vh;
+
 }
+
+button:focus {outline:0 !important;}
 
 
 *{

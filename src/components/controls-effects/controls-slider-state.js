@@ -35,9 +35,9 @@ class ControlsSlider extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { effects, keyboard } = nextProps
-    const { props, effectChanged } = this.props
+    const { props } = this.props
     const { key, group, onChange } = props
-    let { selected } = effects.get(group)[key]
+    let { selected, value } = effects.get(group)[key]
     let _shiftDown = keyboard.get(Keys.SHIFT.toString())
     if (selected) {
       this.slider.classList.add('is-selected')
@@ -48,6 +48,12 @@ class ControlsSlider extends Component {
     if (this.state.selected !== selected) {
       this.setState({
         selected: selected
+      })
+    }
+
+    if (this.state.value !== value) {
+      this.setState({
+        value: value
       })
     }
 
@@ -72,8 +78,8 @@ class ControlsSlider extends Component {
     return this.refs[this.sliderRef].refs.slider
   }
 
-  get sliderHeight(){
-    return parseInt(this.slider.offsetHeight,10)
+  get sliderHeight() {
+    return parseInt(this.slider.offsetHeight, 10)
   }
 
   get sliderRef() {
@@ -82,17 +88,23 @@ class ControlsSlider extends Component {
   }
   _onMouseOver(e) {
     this._startY = e.pageY
-    this.startValue =  this.state.value
+    this.startValue = this.state.value
   }
   _onMouseMove(e) {
+    const { keyboard } = this.props
+    let _shiftDown = keyboard.get(Keys.SHIFT.toString())
+    if(_shiftDown){
     const d = this._startY - e.pageY
     const { props } = this.props
-    const v = d/this.sliderHeight
-    this.setState({
-      value: Utils.clamp(this.startValue + v,
+    const v = d / this.sliderHeight
+      const value = Utils.clamp(this.startValue + v,
         props.min,
-        props.max)
-    })
+        props.max);
+      this.setState({
+        value
+      })
+      props.onChange(props, value)
+    }
   }
 
   _onMouseOut(e) {
@@ -118,7 +130,7 @@ class ControlsSlider extends Component {
           this._onMouseOut(e)
         }
       } >
-      <Rcslider ref = { this.sliderRef }
+      < Rcslider ref = { this.sliderRef }
       className = { `effects-slider ${_clasz}` }
       onChange = {
         (val) => {
@@ -139,7 +151,7 @@ class ControlsSlider extends Component {
         }
       }
       vertical = { vertical } {...Object.assign({}, props.slider) }
-      /> < /div >
+      /> < /div>
     )
   }
 }

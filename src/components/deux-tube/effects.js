@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import VideoEffects from '@samelie/video-effects'
+import VideoEffects from 'chewb-video-effects'
 import EaseNumbers from '../../utils/easeNumbers'
 let _o = {
   texture: {
@@ -22,7 +22,10 @@ let _o = {
     type: 'int',
     value: 0
   },
-
+  uKeyColor: {
+    type: 'vec3',
+    value: [0,0,0]
+  },
   uColorEffectsOne: {
     type: 'float',
     value: 1.
@@ -79,7 +82,6 @@ let _o = {
     type: 'float',
     value: 0.0
   },
-
   uBlendMode: {
     type: 'int',
     value: 0
@@ -128,7 +130,6 @@ export default class DeuxEffects {
   }
 
   setUniforms(obj) {
-    console.log(obj);
   }
 
   start() {}

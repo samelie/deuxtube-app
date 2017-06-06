@@ -29,7 +29,7 @@ class MakeStatus extends Component {
 
   render() {
     return (
-      <div className = "make-status">
+      <div className = "make-status u-text-small">
         {this.state.status}
        </div>
     )

@@ -1,6 +1,6 @@
 import './player.scss';
-import { Behavior } from '@samelie/dash-player'
-import DashRecorder from '@samelie/dash-player-recorder'
+import { Behavior } from 'chewb-dash-player'
+import DashRecorder from 'chewb-dash-player-recorder'
 
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
@@ -11,7 +11,6 @@ import Socket from '../../utils/socket';
 import Gui from './gui2'
 import Video from './video'
 import Effects from './effects'
-import DeuxTubeAudio from './audio'
 import Emitter from '../../utils/emitter'
 import raf from 'raf'
 import EaseNumbers from '../../utils/easeNumbers'

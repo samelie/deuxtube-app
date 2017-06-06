@@ -20,3 +20,5 @@ INSTAGRAM_SECRET=7ac9fac8b09b4634af1720e05d376a75
 YOUTUBE_ID=390854965946-u8n4jeabn19qk9dvn6ofpdkfdvmrid2c.apps.googleusercontent.com
 YOUTUBE_SECRET=4WmOui4rln4K8hQssMdjki52
 YOUTUBE_DL=youtube-dl
+YOUTUBE_DL_PATH=./bin/youtube-dl
+FFMPEG_PATH=./bin/ffmpeg

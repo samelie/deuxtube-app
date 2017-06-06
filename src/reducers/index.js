@@ -9,6 +9,7 @@ import playlists from './playlists';
 import keyboard from './keyboard';
 import effects from './effects';
 import query from './query';
+import error from './error';
 import playbar from './playbar';
 import playlistControls from './playlist_controls';
 import makeStatus from './make_status';
@@ -38,6 +39,7 @@ export default combineReducers({
   effects,
   videoState,
   videoRecord,
+  error,
   query,
   keyboard,
   mouse,
