@@ -117,17 +117,20 @@ class CompletePage extends Component {
     console.log(audio.get('duration'));
     const userTitle = this.refs.title.value
     const userDesc = this.refs.describe.value
-    const title = userTitle === "" ? audio.get('info').snippet.title : userTitle
-    console.log(title);
-    console.log(audio.get('info'));
+    let title = userTitle === "" ? audio.get('info').snippet.title : userTitle
+
+    if(audio.get('duration') - 2 < audio.get('track').totalDuration){
+      title += " (incomplete)"
+    }
+
     window.EAPI.sendEvent('youtube-upload', {
       local: app.get('finalSave').local,
       title: title,
       //privacy: this.refs.privacy.value ? "private" : "public",
       description: `
       ${userDesc}
-      ${DESCCLIAMER}
-      Using the audio track from ${audio.get('info').id}
+      ${DESCCLIAMER}.
+      Using the audio track from http://youtube.com/watch?v=${audio.get('info').id}
       `,
       credentials: {
         access_token:auth.get('youtube').accessToken

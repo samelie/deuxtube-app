@@ -10,7 +10,7 @@
     align-items: flex-start;
     justify-content: center;
     flex-direction: row;
-    background: url('/assets/images/background_make.jpg');
+    background: url('../assets/images/background_make.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -117,4 +117,8 @@
 .make-status{
    font-size: $fs-sm;
    -webkit-line-clamp: 2;
+}
+
+.make-page--thumb--over{
+  width: 100%;
 }

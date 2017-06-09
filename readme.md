@@ -5,4 +5,4 @@ Music video interface for the 'tube. Steer the stream with query currents and ch
 
 ## build
 
-electron-packager . DeuxTube —platform=osx —arch=x64 -icons=deux-tube.icns
+electron-packager . DeuxTube —platform=osx —arch=x64 -icon=deux-tube.icns

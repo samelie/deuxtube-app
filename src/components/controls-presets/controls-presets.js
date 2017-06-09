@@ -3,7 +3,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import Dropdown from 'react-dropdown';
 import _ from 'lodash';
-import {options, presets} from './presets';
+import presets from './presets';
 import { connect } from 'react-redux';
 
 import Keys from '../../utils/keys';
@@ -24,7 +24,7 @@ import BasicButton from '../ui/basic-button';
 import Config from '../../utils/config'
 
 const VERBOSE = false
-const KEY_CODES = [49,50]
+const KEY_CODES = [49, 50]
 class ControlsPresets extends Component {
 
   static contextTypes = {
@@ -33,27 +33,39 @@ class ControlsPresets extends Component {
 
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+
+    }
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    presets().then(data => {
+      this.presets = data.presets
+      this.setState({ options: data.options })
+    })
+  }
 
   componentWillReceiveProps() {
     return false
   }
 
   _onSelect(choice) {
-    const preset = presets[parseInt(choice.value,10)]
-    const { effectChanged,keyUp, keyDown } = this.props
-    preset.selection.forEach((val, index)=>{
-      if(!val){
+    const preset = Object.assign({}, this.presets[parseInt(choice.value, 10)])
+    const { effectChanged, keyUp, keyDown } = this.props
+    console.log(preset);
+    const {selection} = preset
+    selection.forEach((val, index) => {
+      if (!val) {
         keyUp(KEY_CODES[index])
-      }else{
+      } else {
         keyDown(KEY_CODES[index])
       }
     })
+
+    delete preset.selection
+
     _.forIn(preset, (val, key) => {
-      if(val.group){
+      if (val.group) {
         effectChanged({
           group: val.group,
           key,
@@ -64,10 +76,11 @@ class ControlsPresets extends Component {
   }
 
   render() {
+    if (!this.state.options) return null
     return (
       <Dropdown
         className="controls-presets"
-        options={options}
+        options={this.state.options}
         onChange={this._onSelect.bind(this)}
         placeholder="Presets"
       />

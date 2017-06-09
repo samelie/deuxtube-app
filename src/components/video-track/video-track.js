@@ -337,7 +337,7 @@ class AudioTrack extends Component {
     //<div>{this.state.currentVideo.title}</div>
     return (
       <div ref="videoTrack" className="video-track">
-        <img className="video-track--bg" src="/assets/images/poster-bg.png"></img>
+        <img className="video-track--bg"></img>
         <div className="video-track__playing">
           <div ref="videoTrackWrapper" className="playing__wrapper">
             <img src={smallImageUrl(this.state.currentVideo.videoId)}></img>

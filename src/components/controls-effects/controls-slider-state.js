@@ -75,7 +75,7 @@ class ControlsSlider extends Component {
   }
 
   get slider() {
-    return this.refs[this.sliderRef].refs.slider
+    return this.refs[this.sliderRef].sliderRef
   }
 
   get sliderHeight() {
@@ -112,9 +112,9 @@ class ControlsSlider extends Component {
   }
 
   render() {
-    const { props, sliderValue, vertical } = this.props
+    const { props, sliderValue, vertical, key } = this.props
     let _clasz = (vertical ? "is-vertical" : "is-horizontal")
-    return ( < div className = { `controls-slider` }
+    return ( <div className = { `controls-slider` }
       onMouseOver = {
         (e) => {
           this._onMouseOver(e)
@@ -130,7 +130,9 @@ class ControlsSlider extends Component {
           this._onMouseOut(e)
         }
       } >
-      < Rcslider ref = { this.sliderRef }
+      <Rcslider
+      ref = { this.sliderRef }
+      key={this.props.props.key}
       className = { `effects-slider ${_clasz}` }
       onChange = {
         (val) => {
@@ -151,7 +153,7 @@ class ControlsSlider extends Component {
         }
       }
       vertical = { vertical } {...Object.assign({}, props.slider) }
-      /> < /div>
+      /> </div>
     )
   }
 }

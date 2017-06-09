@@ -3,12 +3,15 @@
   "private": true,
   "dependencies": {
     "chewb-passport": "^0.0.1",
-    "chewb-server": "^0.0.1",
+    "chewb-server": "0.0.11",
     "dotenv": "^4.0.0",
     "express": "^4.15.3"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "browserify --node index.js > bundle.js"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "ffmpeg-static": "^2.0.0"
+  }
 }

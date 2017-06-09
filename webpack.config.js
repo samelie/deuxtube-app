@@ -21,7 +21,7 @@ const CSS_LOADERS = {
   scss: '!sass-loader'
 };
 
-const ASSETS_DIR = "https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/"
+const ASSETS_DIR = "https://storage.googleapis.com/samrad-adddog/www-assets/assets/"
 
 const ENV_VARS = {
   //SOCKET_SERVER: '"http://0.0.0.0:8080"',
@@ -29,8 +29,8 @@ const ENV_VARS = {
   //SOCKET_SERVER: '"https://rad.wtf/chewb"',
   //APP_HOST: '"https://add.dog/"',
   APP_DOMAIN: '"/"',
-  ASSETS_DIR: '"https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/"',
-  REMOTE_ASSETS_DIR: '"https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/"'
+  ASSETS_DIR: '"https://storage.googleapis.com/samrad-adddog/www-assets/assets/"',
+  REMOTE_ASSETS_DIR: '"https://storage.googleapis.com/samrad-adddog/www-assets/assets/"'
 }
 
 
@@ -49,7 +49,7 @@ module.exports = env => {
 
   const stylesLoaders = () => {
     let _l = Object.keys(CSS_LOADERS).map(ext => {
-      const prefix = 'css-loader?-minimize!postcss-loader';
+      const prefix = 'css-loader?url=false!postcss-loader';
       const extLoaders = prefix + CSS_LOADERS[ext];
       const loader = isDev ? `style-loader!${extLoaders}` : ExtractTextPlugin.extract({ use: `${extLoaders}` })
       return {
@@ -69,7 +69,7 @@ module.exports = env => {
     output: {
       filename: 'bundle.[name].[chunkhash].js',
       path: resolve(__dirname, constants.DIST),
-      publicPath: "/",
+      publicPath: "",
       pathinfo: !env.prod,
     },
     context: constants.SRC_DIR,
@@ -87,9 +87,19 @@ module.exports = env => {
     },
     bail: env.prod,
     resolve: {
-      extensions: ['.js', '.jsx']
+      extensions: ['.js', '.jsx'],
+      /*alias: {
+        'assets': resolve('dist')
+      }*/
     },
     module: {
+      /*rules: [{
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        use: [
+          'url-loader?limit=10000',
+          'img-loader'
+        ]
+      }],*/
       loaders: [{
           test: /\.svg$/,
           loader: 'svg-inline-loader'
@@ -111,13 +121,8 @@ module.exports = env => {
           test: /\.(glsl|vert|frag)$/,
           loader: 'shader-loader',
           exclude: /node_modules/
-        }
-        /*, {
-                test: /\.scss$/,
-                exclude: /node_modules/,
-                loader: "style-loader!css-loader!postcss-loader?pack=cleaner"
-              }*/
-      ].concat(stylesLoaders()),
+        }]
+        .concat(stylesLoaders()),
     },
     plugins: removeEmpty([
       new webpack.DefinePlugin({

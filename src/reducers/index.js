@@ -14,6 +14,7 @@ import playbar from './playbar';
 import playlistControls from './playlist_controls';
 import makeStatus from './make_status';
 import auth from './auth';
+import ui from './ui';
 import videoState from './video_state';
 import audio from './audio';
 import mouse from './mouse';
@@ -32,6 +33,7 @@ export default combineReducers({
   app,
   videoTracks,
   auth,
+  ui,
   playbar,
   playlistControls,
   makeStatus,

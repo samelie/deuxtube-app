@@ -62,16 +62,24 @@ class VideoPlaylist extends Component {
     }
   }
 
+  _queueItemOver(videoId){
+    console.log(videoId);
+    const {onOver} = this.props
+    if(onOver){
+      onOver(videoId)
+    }
+  }
+
   render() {
     const { keyboard, browser, playlist, className } = this.props;
 
     if (!playlist) {
       return <div></div>
     }
-
     let _items = playlist.map(id => {
       return <PlaylistItem
       onClick={this._queueItemClicked.bind(this)}
+      onOver={this.props.onOver}
       key = { id }
       videoId={id}
       />

@@ -3,7 +3,7 @@ import './main.scss';
 import React from 'react'
 import ReactDom from 'react-dom'
 import { Provider } from 'react-redux';
-import { createHistory } from 'history';
+import { createHashHistory } from 'history';
 import { Router, useRouterHistory } from 'react-router';
 
 import { syncHistoryWithStore } from 'react-router-redux';
@@ -28,7 +28,7 @@ FastClick.attach(document.body);
 //process.env.IS_APP = true
 
 // Configure store and routes
-const browserHistory = useRouterHistory(createHistory)({
+const browserHistory = useRouterHistory(createHashHistory)({
   basename: process.env.APP_DOMAIN
 });
 

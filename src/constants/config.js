@@ -27,8 +27,8 @@ export const VIDEO_HEIGHT = 360
 export const VERBOSE = false
 export const MAX_RESOLUTION = '360p'
 export const RECORDING_FRAME_FMT = 'image/jpeg'
-export const RECORDING_FRAME_Q = 0.8
-export const RECORDING_FRAME_EXT = '.webp'
+export const RECORDING_FRAME_Q = 0.9
+export const RECORDING_FRAME_EXT = '.jpeg'
 
 
 export const AUDIO_CHUNKS_TO_LOAD =  process.env.IS_APP ? 999 : 3

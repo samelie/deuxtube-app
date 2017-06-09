@@ -9,6 +9,11 @@ import PlaylistItem from './playlistItem';
 import Emitter from '../../utils/emitter';
 import Keys from '../../utils/keys';
 
+import {
+  mouseOverVideoThumb,
+} from '../../actions/ui';
+
+
 class QueryResults extends Component {
 
   static contextTypes = {
@@ -77,15 +82,22 @@ class QueryResults extends Component {
     }
 
     render() {
-      const { keyboard, browser, playlist, className } = this.props;
+      const { keyboard, browser, playlist, className,mouseOverVideoThumb } = this.props;
 
       if (!playlist) {
         return <div></div>
       }
-
+      let _timeout;
       let _items = playlist.map(id => {
         return <PlaylistItem
       onClick={this._queueItemClicked.bind(this)}
+      onOver={(videoId)=>{
+              clearTimeout(_timeout)
+              mouseOverVideoThumb(videoId)
+              _timeout = setTimeout(()=>{
+                mouseOverVideoThumb(null)
+              }, 4000)
+            }}
       key = { id }
       videoId={id}
       />
@@ -111,4 +123,5 @@ class QueryResults extends Component {
     keyboard,
   }), {
     movePlaylistItem,
+    mouseOverVideoThumb,
   })(QueryResults);

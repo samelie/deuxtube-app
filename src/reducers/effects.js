@@ -76,7 +76,7 @@ const initialState = new Map()
   }
  })
  .set('blend', {
-  /*'uBlendOpacity': {
+  'uBlendOpacity': {
    key: 'uBlendOpacity',
    title: 'uBlendOpacity',
    selected: false,
@@ -90,7 +90,7 @@ const initialState = new Map()
     max: 1,
     step: 0.0001,
    },
-  },*/
+  },
   'uBlendMix': {
    key: 'uBlendMix',
    title: 'uBlendMix',
@@ -354,6 +354,9 @@ export default function effects(state = initialState, action) {
     const { group, key, val } = action.payload
     let _group = state.get(group)
     _group[key].value = val
+    console.log(_group);
+    console.log(key);
+    console.log(_group[key]);
     return state.set(group, Object.assign({}, _group))
      .set('updatedEffect', Object.assign({}, _group[key]))
    }

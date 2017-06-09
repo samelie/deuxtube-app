@@ -13,6 +13,7 @@ const YoutubeDlPath = require('./update-youtubedl')()
 .then(youtubeDl=>{
   console.log("youtubeDl", youtubeDl);
   server.sidx.setYoutubeDLPath(youtubeDl)
+  server.sidx.setTempSaveDir(path.parse(youtubeDl).dir)
 })
 
 let strats = [{

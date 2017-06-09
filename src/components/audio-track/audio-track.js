@@ -41,6 +41,7 @@ class AudioTrack extends Component {
     super(props)
     const { addAudio } = this.props
     this.sliderData = [{
+      visible:false,
       key: 'seek',
       title: 'Seek',
       value: 0,
@@ -66,11 +67,12 @@ class AudioTrack extends Component {
       title: 'Range',
       type: 'range',
       value: [0, 1],
+      visible:false,
       slider: {
         min: 0,
         max: 1,
         step: 0.01,
-        defaultValue: [0, 1],
+        defaultValue: 0,
         onChange: (val) => {
           this._updateRangeState({ sliderValue: val })
           let _dur = val[1] - val[0]

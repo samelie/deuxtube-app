@@ -1,9 +1,8 @@
 'use strict';
 
 const YOUTUBE_RENDER_PLAYLIST = "PLZRcgvIPIUuWGsz6oBbUnu2Mtqiq11mME"
-const electron = require('electron')
 const xhr = require('xhr-request')
-const { ipcMain } = require('electron')
+const { app, ipcMain, Menu, BrowserWindow } = require('electron')
 const path = require('path')
 var fs = require('fs-extra')
 var tmp = require('tmp');
@@ -12,14 +11,8 @@ const spawn = require('child_process').spawnSync
 const Recorder = require('./app_js/recorder')
 const Uploader = require('chewb-youtube-uploader')
 
-const IS_PROD = true
+const IS_PROD = false
 const HOST = "https://rad.wtf/redis/"
-
-// Module to control application life.
-const app = electron.app
-  //const recorder = Recorder()
-  // Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow
 
 const getVideoDuration = (videoPath) => {
   const child = spawn(`ffprobe`, [`-print_format`, `json`, `-show_format`, `-show_streams`, `-count_frames`, `${videoPath}`])
@@ -99,7 +92,10 @@ const chewbPath = IS_PROD ? 'chewb/index.js' : 'chewb/index.js'
 //server
 //let server = new Chewb(path.join(__dirname, 'chewb/envvars'))
 
-let server = exec(`node ${chewbPath}`, { maxBuffer: NaN },
+var tmpobj = tmp.dirSync();
+const { dir } = path.parse(tmpobj.name)
+tmpobj = path.join(dir, "deux-tube")
+let server = exec(`${path.join(__dirname, 'bin/node')} ${path.join(__dirname, chewbPath)}`, { maxBuffer: NaN },
   (e, stdout, stderr) => {
     if (e instanceof Error) {
       console.error(e);
@@ -109,6 +105,7 @@ let server = exec(`node ${chewbPath}`, { maxBuffer: NaN },
     console.log('stderr ', stderr);
   });
 server.stdout.on('data', function(chunk) {
+  fs.appendFile(path.join(tmpobj, "log.txt"), chunk)
   console.log(chunk);
 });
 
@@ -135,10 +132,14 @@ server.stderr.on('data', (data) => {
 let python;
 if (IS_PROD) {
   //const child = spawn(`python`, ['-m', 'SimpleHTTPServer', '1608'])
-  process.chdir('dist')
-  python = exec(`python -m SimpleHTTPServer 1608`)
-  process.chdir('../')
+  //process.chdir('dist')
+  //python = exec(`python -m SimpleHTTPServer 1608`)
+  //python = exec(`pushd ./dist; python –m SimpleHTTPServer 1608; popd;`)
+  //process.chdir('../')
 }
+
+
+
 
 
 
@@ -147,11 +148,11 @@ function createWindow() {
   //commonWindow = new BrowserWindow({ width: 640, height: 360 })
   //commonWindow.loadURL(`file://${__dirname}/dist/output-window.html`);
 
-
   mainWindow = new BrowserWindow({ width: IS_PROD ? 960 : 1200, height: 600 })
 
   if (IS_PROD) {
-    mainWindow.loadURL('http://localhost:1608')
+    mainWindow.loadURL(`file://${__dirname}/dist/index.html`);
+    //mainWindow.loadURL('http://localhost:1608')
   } else {
     mainWindow.loadURL(`http://localhost:8081`)
   }
@@ -161,12 +162,32 @@ function createWindow() {
   }
 
   mainWindow.on('closed', function() {
-    if (IS_PROD) {
+    if (IS_PROD && python) {
       python.kill()
     }
     server.kill()
     mainWindow = null
   })
+
+  var template = [{
+    label: "Application",
+    submenu: [
+      { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); } }
+    ]
+  }, {
+    label: "Edit",
+    submenu: [
+      { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+      { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+      { type: "separator" },
+      { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+      { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+      { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+      { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+    ]
+  }];
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 
 }
 
@@ -191,6 +212,8 @@ app.on('activate', function() {
     createWindow()
   }
 })
+
+
 
 
 // In this file you can include the rest of your app's specific main process

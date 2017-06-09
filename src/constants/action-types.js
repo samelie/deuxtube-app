@@ -42,3 +42,5 @@ export const SET_ERROR = 'SET_ERROR';
 
 export const RESIZE = 'RESIZE';
 export const ORIENTATION_CHANGE = 'ORIENTATION_CHANGE';
+
+export const MOUSE_OVER_VIDEO_THUMB = 'MOUSE_OVER_VIDEO_THUMB';

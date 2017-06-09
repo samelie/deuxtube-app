@@ -16,10 +16,12 @@ import { fetchJson } from '../../utils/fetch';
 import Project from './project';
 import ReactHtmlParser from 'react-html-parser';
 
+
 import Socket from '../../utils/socket';
 import Emitter from '../../utils/emitter';
 import Audio from '../../components/audio-track/audio-track';
 import VideoTrack from '../../components/video-track/video-track'
+import Image from '../../components/image/image'
 import QueryResults from '../../components/query-results/query-results'
 import ControlsRecord from '../../components/controls-record/controls-record';
 import ControlsEffects from '../../components/controls-effects/controls-effects';
@@ -199,7 +201,7 @@ class MakePage extends Component {
   }
 
   _renderVideoPlaylist() {
-    const { playlists } = this.props;
+    const { playlists,mouseOverVideoThumb } = this.props;
     let i = -1
     return playlists.map((playlistObj) => {
       i++
@@ -262,7 +264,7 @@ class MakePage extends Component {
   }
 
   render() {
-    const { browser, params } = this.props;
+    const { browser, params, ui } = this.props;
     return (
       <div ref="make" style={this.state.bgImageStyle} className="o-page make make--interactive">
         <div className="u-page--col--big">
@@ -291,6 +293,7 @@ class MakePage extends Component {
               </div>
               <div className="make--youtubeblock--cell">
                 {this._renderVideoTracks()}
+                <Image className="make-page--thumb--over" src={ui.get("mouseOverVideoThumb")} />
               </div>
           </div>
         </div>
@@ -300,9 +303,10 @@ class MakePage extends Component {
   }
 }
 
-export default connect(({ browser, app, audio, query, videoTracks, playlists }) => ({
+export default connect(({ browser, app, ui,audio, query, videoTracks, playlists }) => ({
   browser,
   app,
+  ui,
   audio,
   query,
   videoTracks,

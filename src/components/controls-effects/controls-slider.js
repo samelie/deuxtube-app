@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import Rcslider from 'rc-slider';
 
 const CONTROLS_SLIDER = (props) => {
+  console.log(props);
   return (
     <Rcslider className="effects-slider"
      ref={props.key}

@@ -193,9 +193,11 @@ class DeuxTube extends Component {
     if (!this.state.ready) {
       return (
         <div ref="deuxTube" className="deux-tube">
-          <img className="deux-tube--bg" src="/assets/images/player-bg.png"></img>
-          <canvas ref="output" className="output-canvas"></canvas>
-          <canvas ref="gl" className="gl-canvas"></canvas>
+          <div className="aspect-content">
+            <img className="deux-tube--bg"></img>
+            <canvas ref="output" className="output-canvas"></canvas>
+            <canvas ref="gl" className="gl-canvas"></canvas>
+          </div>
         </div>
       );
     }

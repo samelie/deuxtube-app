@@ -37,7 +37,7 @@ class MediaControls extends Component {
   render() {
     const { browser } = this.props;
     const {slider} = this.props
-    const {type, sliderValue, paused} = this.props
+    const {visible, type, sliderValue, paused} = this.props
     let _comp
     switch(type){
       case 'range':
@@ -46,8 +46,11 @@ class MediaControls extends Component {
       default:
       _comp = <Rcslider ref="slider"  {...slider} value={sliderValue}/>
     }
+    const hidden = visible ? "" : "hidden"
     return (
-      <div ref="mediaControls" className="media-controls u-text-small u-underline">
+      <div ref="mediaControls"
+      className={`media-controls u-text-small u-underline ${hidden}`}
+      >
         <div>{this.props.title}</div>
         {_comp}
       </div>

@@ -14,11 +14,11 @@
 
 .record-btn{
     position:relative;
-    background: url('/assets/images/button-record.png');
+    background: url('../assets/images/button-record.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     &:hover{
-      background: url('/assets/images/button-record-hover.png');
+      background: url('../assets/images/button-record-hover.png');
       background-size: 100% 100%;
       background-repeat: no-repeat;
     }

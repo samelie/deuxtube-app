@@ -8,8 +8,9 @@ const tmp = require('tmp');
 
 
 module.exports = function UserRecord() {
-
-  const _recorder = new DASHSAVE({ffmpegPath:'./bin/ffmpeg'})
+  const ffmpegPath = path.join(__dirname, '../bin/ffmpeg')
+  console.log("ffmpegPath", ffmpegPath);
+  const _recorder = new DASHSAVE({ffmpegPath:path.join(__dirname, '../bin/ffmpeg')})
   const _saveHash = uuid.v4()
   let saveDirectory
   tmp.dir((err, dir, cleanupCallback) => {

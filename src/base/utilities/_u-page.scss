@@ -46,7 +46,7 @@
 }
 .button--action {
     position:relative;
-    background: url('/assets/images/button.png');
+    background: url('../assets/images/button.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
     border: none;
@@ -57,10 +57,10 @@
     flex-wrap: nowrap;
     word-wrap: inherit;
     white-space: nowrap;
-    font-weight: 700;
     user-select:none;
+    color: rgba(0,0,0,0.8);
     &:hover{
-      background: url('/assets/images/button-hover.png');
+      background: url('../assets/images/button-hover.png');
       background-size: 100% 100%;
       background-repeat: no-repeat;
     }
