@@ -11,7 +11,6 @@
     "start": "node index.js",
     "build": "browserify --node index.js > bundle.js"
   },
-  "devDependencies": {
-    "ffmpeg-static": "^2.0.0"
-  }
+  "devDependencies": {},
+  "false": {}
 }

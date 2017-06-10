@@ -54,11 +54,3 @@ let chewbPassport = new ChewbPassport(
     baseRoute: '',
     logOut: true
   })
-
-
-
-/*const Server = function(){
-  return server
-}
-
-module.exports = Server*/

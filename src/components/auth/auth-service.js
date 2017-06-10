@@ -15,7 +15,7 @@ const AUTH_SERVICE = (() => {
 
   function auth(url) {
     return new Q((yes, no) => {
-      let newWindow = window.open(url, null, "height=350,width=600,status=yes,toolbar=no,menubar=no,location=no");
+      let newWindow = window.open(url, null, "height=600,width=600,status=yes,toolbar=no,menubar=no,location=no");
       console.log(newWindow);
       let _i = setInterval(() => {
         if (newWindow.location) {

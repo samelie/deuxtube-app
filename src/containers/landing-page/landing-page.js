@@ -45,10 +45,10 @@ class LandingPage extends Component {
 
   componentDidMount() {
     this._ytre = /(youtu\.be\/|youtube\.com\/(watch\?(.*&)?v=|(embed|v)\/))([^\?&"'>]+)/
+
     let i;
     window.EAPI.onIsReady = (isReady => {
       this.setState({ ready: isReady })
-      console.log(isReady);
       if (isReady) {
         clearInterval(i)
       }

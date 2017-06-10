@@ -12,4 +12,4 @@ Manually remove `<link href="../www-assets/css/app.css" rel="stylesheet">` fron 
 css is built into `www-assets` to upload with `npm run build:assets`
 
 
-electron-packager . DeuxTube —platform=osx —arch=x64 --icon=/Volumes/Fatboy/Work/deux-tube-site/deux-tube.icns
+electron-packager . DeuxTube —platform=osx —arch=x64 --icon=/Volumes/Fatboy/Work/deux-tube-site/deux-tube.icns --ignore='docs|coverage'

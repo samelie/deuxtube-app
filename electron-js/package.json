@@ -1,0 +1,12 @@
+{
+  "main": "main.app.js",
+  "private": true,
+  "dependencies": {
+    "chewb-youtube-uploader": "*",
+    "tmp": "0.0.31",
+    "xhr-request": "^1.0.1"
+  },
+  "scripts": {},
+  "devDependencies": {},
+  "false": {}
+}

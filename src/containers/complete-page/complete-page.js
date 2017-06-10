@@ -134,7 +134,8 @@ class CompletePage extends Component {
     let title = userTitle === "" ? audio.get('info').snippet.title : userTitle
     const recordedTime = (videoRecord.frameCount / Config.FPS)
 
-    if (recordedTime < parseInt(audio.get('track').totalDuration, 10) - 4) {
+    if (recordedTime < parseInt(audio.get('track').totalDuration, 10) - 4 &&
+      userTitle === "") {
       title = "(incomplete) " + title
     }
 
@@ -191,13 +192,13 @@ class CompletePage extends Component {
         <input
           ref="title"
           placeholder={title}
-          className="input u-bottom-margin"
+          className="input u-bottom-margin complete--input"
         ></input>
         <div className="complete--text u-text-small u-underline">Description</div>
         <input
           ref="describe"
           placeholder={`description for your video`}
-          className="input u-bottom-margin"
+          className="input u-bottom-margin complete--input"
         ></input>
         <ActionButton
           text={'Share on youtube'}
