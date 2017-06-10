@@ -35,6 +35,8 @@ import ErrorComp from '../../components/error/error';
 import MakeStatus from '../../components/make-status/make-status';
 import Instruction from '../../components/ui/instruction'
 
+import Analytics from '../../utils/analytics';
+
 import {
   VIDEO_WIDTH,
   VIDEO_HEIGHT,
@@ -81,7 +83,10 @@ class MakePage extends Component {
   componentWillReceiveProps(nextProps) {
     let { app, audio, query } = nextProps
     const { dispatch } = this.props;
-    if (app.get('saving') && !this.state.saving) {
+    if(app.get('recording')){
+      this.setState({ hasRecorded: true })
+    }
+    if (app.get('saving') && !this.state.saving && this.state.hasRecorded) {
       this.setState({ saving: true })
       let _media = audio.get('track')
       let _dur = _media.totalDuration
@@ -179,6 +184,8 @@ class MakePage extends Component {
 
       //this._saving()
     })
+
+    Analytics.pageview(window.location.pathname);
   }
 
   _saving() {
@@ -254,8 +261,9 @@ class MakePage extends Component {
   }
 
   _renderInstrcutions(){
-    const { playlists } = this.props;
-    if(!playlists.size) return null
+    const { query } = this.props;
+    const results = query.get('results')
+    if(!results) return null
     return (<Instruction
                 text={`Click to reorder. \n Shift-click to remove.`}
                 instructionAccessed={this.state.playlistInstructionAccessed}

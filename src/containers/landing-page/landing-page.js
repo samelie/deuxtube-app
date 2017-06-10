@@ -2,6 +2,7 @@ import './landing-page.scss';
 
 import React, { Component, PropTypes } from 'react';
 import { push } from 'react-router-redux';
+import { isEmpty } from 'lodash';
 
 import createFragment from 'react-addons-create-fragment'
 
@@ -14,6 +15,8 @@ import ReactHtmlParser from 'react-html-parser';
 import AudioTrackForm from '../../components/audio-track-form/audio-track-form';
 import LoginForm from '../../components/login-form/login-form';
 import Auth from '../../components/auth/auth';
+
+import Analytics from '../../utils/analytics';
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -54,12 +57,15 @@ class LandingPage extends Component {
     i = setInterval(() => {
       window.EAPI.sendEvent('is-ready')
     }, 100)
+
+    Analytics.pageview(window.location.pathname);
+
   }
 
   componentWillReceiveProps(nextProps) {
     const { auth } = nextProps
     let youtube = auth.get('youtube')
-    if (youtube) {
+    if (!isEmpty(youtube)) {
       this.setState({ youtube: youtube })
     }
   }

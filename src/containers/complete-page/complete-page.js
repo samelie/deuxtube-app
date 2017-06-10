@@ -12,11 +12,13 @@ import UserSocket from '../../services/user-service';
 
 import QueryInput from '../../components/query-input/query-input'
 import ActionButton from '../../components/ui/action-button'
-
+import Config from '../../utils/config'
 import {
   VIDEO_WIDTH,
   VIDEO_HEIGHT,
 } from '../../constants/config';
+
+import Analytics from '../../utils/analytics';
 
 const DESCCLIAMER = "Made with Deux-tube app with youtube content. http://rad.wtf"
 
@@ -45,7 +47,7 @@ class CompletePage extends Component {
     const { app, audio } = this.props
     const finalUrl = app.get('finalSave').url
 
-    if(finalUrl){
+    if (finalUrl) {
       console.log(`componentDidMount() ${finalUrl}`);
       this._fieldStamp = Date.now().toString()
       this._storeVideo({
@@ -53,6 +55,9 @@ class CompletePage extends Component {
         info: audio.get('info')
       })
     }
+
+    Analytics.pageview(window.location.pathname);
+
   }
 
   _storeVideo(value) {
@@ -95,14 +100,14 @@ class CompletePage extends Component {
   }
 
   uploadVideo() {
-    const { app, auth, audio } = this.props;
+    const { app, videoRecord, auth, audio } = this.props;
     console.log(audio.get('info'));
-    const totalByteSize = parseInt(app.get('finalSave').metadata.format.size,10)
-    console.log("totalByteSize",totalByteSize);
+    const totalByteSize = parseInt(app.get('finalSave').metadata.format.size, 10)
+    console.log("totalByteSize", totalByteSize);
 
     window.EAPI.onYoutubeUploadProgress = (uploadBytes => {
       console.log(uploadBytes, totalByteSize);
-      this.setState({youtubeUploadProgress: Math.round(uploadBytes/totalByteSize*100)})
+      this.setState({ youtubeUploadProgress: Math.round(uploadBytes / totalByteSize * 100) })
     })
 
     window.EAPI.onYoutubeUploaded = (youtube => {
@@ -111,6 +116,15 @@ class CompletePage extends Component {
       this._storeVideo({
         youtube: _v
       })
+
+
+      Analytics.event({
+        category: 'Deux-tube',
+        action: 'uploaded',
+        label: _v.id,
+        nonInteraction: true
+      });
+
     })
 
     console.log(audio.get('track'));
@@ -118,10 +132,12 @@ class CompletePage extends Component {
     const userTitle = this.refs.title.value
     const userDesc = this.refs.describe.value
     let title = userTitle === "" ? audio.get('info').snippet.title : userTitle
+    const recordedTime = (videoRecord.frameCount / Config.FPS)
 
-    if(audio.get('duration') - 2 < audio.get('track').totalDuration){
-      title += " (incomplete)"
+    if (recordedTime < parseInt(audio.get('track').totalDuration, 10) - 4) {
+      title = "(incomplete) " + title
     }
+
 
     window.EAPI.sendEvent('youtube-upload', {
       local: app.get('finalSave').local,
@@ -133,8 +149,9 @@ class CompletePage extends Component {
       Using the audio track from http://youtube.com/watch?v=${audio.get('info').id}
       `,
       credentials: {
-        access_token:auth.get('youtube').accessToken
-      }
+        access_token: auth.get('youtube').accessToken
+      },
+      totalByteSize
     })
   }
 
@@ -155,16 +172,16 @@ class CompletePage extends Component {
     return <div></div>
   }
 
-  _renderUploadProgress(){
-    if(this.state.youtubeUploadProgress && !this.state.youtubeObj){
+  _renderUploadProgress() {
+    if (this.state.youtubeUploadProgress && !this.state.youtubeObj) {
       return (<div className="complete--upload">{this.state.youtubeUploadProgress}%</div>)
     }
     return (<div></div>)
   }
 
   render() {
-    const { browser,audio, app } = this.props;
-    const videoDuration = parseInt(app.get('finalSave').metadata.streams[0].duration,10)
+    const { browser, audio, app } = this.props;
+    const videoDuration = parseInt(app.get('finalSave').metadata.streams[0].duration, 10)
     const title = (Math.abs(audio.get('duration') - videoDuration)) < 10 ? audio.get('info').snippet.title : "Title your video"
     return (
       <div  className="o-page complete-page">
@@ -200,8 +217,9 @@ class CompletePage extends Component {
 }
 
 
-export default connect(({ browser, app, auth, audio }) => ({
+export default connect(({ browser, videoRecord, app, auth, audio }) => ({
   browser,
+  videoRecord,
   app,
   auth,
   audio

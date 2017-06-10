@@ -43,6 +43,7 @@ class AudioTrack extends Component {
         key: 'seek',
         title: 'Seek',
         value: 0,
+        visible:true,
         slider: {
           min: 0,
           max: 1,
@@ -61,6 +62,7 @@ class AudioTrack extends Component {
           }
         },
       }]
+
       this.state = {
         totalDuration: 0,
         duration: 0,

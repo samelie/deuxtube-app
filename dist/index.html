@@ -1,17 +1,18 @@
 <!doctype html>
 <html lang="en" data-framework="javascript">
-
-<head>
+  <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <title>ADddog</title>
+    <title>DeuxTube</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <script src="assets/third-party/modernizr/modernizr.min.js"></script>
-</head>
 
-<body class="hide">
-    <div id="app" class="o-page"></div>
+    <link href="https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/www-assets/css/app.css" rel="stylesheet">
+
+    <script src="https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/www-assets/third-party/modernizr/modernizr.min.js"></script>
+  <link href="../www-assets/css/app.css" rel="stylesheet"></head>
+  <body class="hide">
+    <div id="app"></div>
     <script>
     var PORT = 8081
     var LOCAL_SERVER = "http://127.0.0.1:1808"
@@ -22,22 +23,18 @@
     <script>
     if (typeof require != 'undefined') {
         var path = require('path');
-        /*require('./dist/assets/js/renderer.js')
-        global.recorder =require('./assets/js/recorder.js')()
-        global.ffmpegrecorder =require('./assets/js/ffmpeg-recorder.js')()*/
-        require(path.join(process.cwd(), 'dist/assets/js/renderer.js'))
-        global.recorder = require(path.join(process.cwd(), 'dist/assets/js/recorder.js'))()
+        require(path.join(__dirname, 'assets/js/renderer.js'))
+        global.recorder = require(path.join(__dirname, 'assets/js/recorder.js'))()
 
         global.ffmpegrecorder = require(
-          path.join(process.cwd(), 'dist/assets/js/ffmpeg-recorder.js'))()
-
+          path.join(__dirname, 'assets/js/ffmpeg-recorder.js'))()
     }else{
 
     }
+    window = window || {}
     window.EAPI = window.EAPI || {}
     </script>
-    <script src="assets/third-party/polyfill.min.js"></script>
-    <script src="assets/third-party/detector/detector.min.js"></script>
-</body>
-
+    <script src="https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/www-assets/third-party/polyfill.min.js"></script>
+    <script src="https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/www-assets/third-party/detector/detector.min.js"></script>
+  <script type="text/javascript" src="bundle.common.0987a022fd9ecaf38388.js"></script><script type="text/javascript" src="bundle.vendor.07c147f9f1dce15eb5f0.js"></script><script type="text/javascript" src="bundle.app.b95f77e0b532ba8746bc.js"></script></body>
 </html>

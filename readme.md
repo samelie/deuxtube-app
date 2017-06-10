@@ -5,4 +5,11 @@ Music video interface for the 'tube. Steer the stream with query currents and ch
 
 ## build
 
-electron-packager . DeuxTube —platform=osx —arch=x64 -icon=deux-tube.icns
+`npm run build:prod`
+
+Manually remove `<link href="../www-assets/css/app.css" rel="stylesheet">` fron `dist/index.html`
+
+css is built into `www-assets` to upload with `npm run build:assets`
+
+
+electron-packager . DeuxTube —platform=osx —arch=x64 --icon=/Volumes/Fatboy/Work/deux-tube-site/deux-tube.icns

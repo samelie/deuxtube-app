@@ -21,7 +21,7 @@ const CSS_LOADERS = {
   scss: '!sass-loader'
 };
 
-const ASSETS_DIR = "https://storage.googleapis.com/samrad-adddog/www-assets/assets/"
+const ASSETS_DIR = "https://storage.googleapis.com/samrad-deuxtube/www-assets/assets/www-assets/"
 
 const ENV_VARS = {
   //SOCKET_SERVER: '"http://0.0.0.0:8080"',
@@ -30,7 +30,7 @@ const ENV_VARS = {
   //APP_HOST: '"https://add.dog/"',
   APP_DOMAIN: '"/"',
   ASSETS_DIR: '"https://storage.googleapis.com/samrad-adddog/www-assets/assets/"',
-  REMOTE_ASSETS_DIR: '"https://storage.googleapis.com/samrad-adddog/www-assets/assets/"'
+  REMOTE_ASSETS_DIR: `"${ASSETS_DIR}"`
 }
 
 
@@ -135,7 +135,7 @@ module.exports = env => {
         assetsUrl: `"${ASSETS_DIR}`,
         template: './index.ejs', // Load a custom template (ejs by default see the FAQ for details)
       })),
-      ifProd(new ExtractTextPlugin({ filename: 'css/[name].css', disable: false, allChunks: true })),
+      ifProd(new ExtractTextPlugin({ filename: '../www-assets/css/[name].css', disable: false, allChunks: true })),
       ifProd(new webpack.LoaderOptionsPlugin({
         minimize: true,
         debug: false,

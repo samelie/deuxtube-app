@@ -83,7 +83,7 @@ class Auth extends Component {
     <div className="auth__wrapper">
 
             <ActionButton
-              text={'Authorize google'}
+              text={'authorize youtube'}
               onClick={this.onGoogleAuth.bind(this)}
             />
       </div>
