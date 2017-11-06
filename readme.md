@@ -2,6 +2,8 @@
 
 Music video interface for the 'tube. Steer the stream with query currents and chewb the mix.
 
+[Download for MaxOS](https://samelie.github.io/deuxtube-web/)
+
 
 [Outputs](samelie.github.io/deuxtube-web)
 
