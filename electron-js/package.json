@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "chewb-youtube-uploader": "*",
+    "electron-debug": "^1.4.0",
     "tmp": "0.0.31",
     "xhr-request": "^1.0.1"
   },

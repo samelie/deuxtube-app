@@ -15,7 +15,7 @@ GOOGLE.upload(path.join(process.cwd(),"www-assets/"), `${BUCKET}www-assets/asset
     console.log(err);
   })
 
-GOOGLE.upload(path.join(process.cwd(),"dist/assets"), `${BUCKET}www-assets/assets/www-assets/`, true)
+GOOGLE.upload(path.join(process.cwd(),"www/dist/assets"), `${BUCKET}www-assets/assets/www-assets/`, true)
   .then(() => {
     console.log("Success");
   })

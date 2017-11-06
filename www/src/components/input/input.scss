@@ -1,0 +1,14 @@
+@import 'fonts';
+.input{
+  position: relative;
+  color:black;
+  font-size: $fs-base;
+  max-width: 100%;
+   background:    url('../assets/images/input2.png');
+    background-size:     cover;
+    background-repeat:   no-repeat;
+    background-position: center center;
+    border:none;
+
+    box-shadow: 1px 1px 1px black;
+}

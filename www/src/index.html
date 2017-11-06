@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-framework="javascript">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <title>ADddog</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <script src="assets/third-party/modernizr/modernizr.min.js"></script>
+</head>
+
+<body class="hide">
+    <div id="app" class="o-page"></div>
+    <script>
+    var PORT = 8081
+    var LOCAL_SERVER = "http://127.0.0.1:1808"
+    //var LOCAL_SERVER = "https://rad.wtf/redis/"
+    var REMOTE_SERVER = LOCAL_SERVER
+    var SOCKET_SERVER = LOCAL_SERVER
+    </script>
+    <script>
+    if (typeof require != 'undefined') {
+        var path = require('path');
+        /*require('./dist/assets/js/renderer.js')
+        global.recorder =require('./assets/js/recorder.js')()
+        global.ffmpegrecorder =require('./assets/js/ffmpeg-recorder.js')()*/
+        require(path.join(process.cwd(), 'www/dist/assets/js/renderer.js'))
+        global.recorder = require(path.join(process.cwd(), 'www/dist/assets/js/recorder.js'))()
+
+        global.ffmpegrecorder = require(
+          path.join(process.cwd(), 'www/dist/assets/js/ffmpeg-recorder.js'))()
+
+    }else{
+
+    }
+    window.EAPI = window.EAPI || {}
+    </script>
+    <script src="assets/third-party/polyfill.min.js"></script>
+    <script src="assets/third-party/detector/detector.min.js"></script>
+</body>
+
+</html>

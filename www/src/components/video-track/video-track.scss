@@ -1,0 +1,29 @@
+@import 'mixins';
+@import 'colors';
+.video-track {
+    position: relative;
+    max-width: 100%;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    .playing__wrapper {
+        position: relative;
+        display: flex;
+        width: 100%;
+            margin-bottom: 10px;
+        @include isSelected($color: $c-green);
+    }
+    &__playing {}
+}
+
+.video-track--bg {
+    position: absolute;
+    left: -10px;
+    top: -10px;
+    width: 140px;
+    height: 110px;
+    pointer-events: none;
+    background: url('../assets/images/poster-bg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}

@@ -1,0 +1,25 @@
+@import 'fonts';
+.audio-track {}
+
+.result__image__wrapper {
+    position: relative;
+    width: 120px;
+    height: 90px;
+}
+
+.result__image {
+  position: absolute;
+  top:0;
+  left:0;
+  width: 100%;
+  height: 100%;
+}
+
+.youtube__track{
+  position:relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+

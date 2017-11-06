@@ -8,6 +8,8 @@ module.exports = () => {
     var tmpobj = tmp.dirSync();
     const { dir } = path.parse(tmpobj.name)
     tmpobj = path.join(dir, "deux-tube")
+    console.log("-- tmp --");
+    console.log(tmpobj);
     const output = path.join(tmpobj, 'youtube-dl')
     try {
       fs.mkdirSync(tmpobj)
